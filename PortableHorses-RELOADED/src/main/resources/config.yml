@@ -1,0 +1,321 @@
+##########################################
+#      PortableHorses - RELOADED         #
+#    Plugin by Ardelean Vlad (dadus33)   #
+##########################################
+#
+#
+#   This is the plugin's configuration file.
+#   As you can see, you can customize most of it's aspects.
+#   Although the large amount of options listed bellow can
+# prove rather confusing, every single one of them is commented
+# well. Also, for further documentation you can visit the plugin's
+# official SpigotMC page or check out our Discord server for live
+# help with any issues you may encounter, as well as reporting bugs
+# or requesting features. I really hope you'll enjoy my work!
+#
+#
+# Crafted with <3
+
+
+#   SPECIAL NOTE BEFORE GETTING STARTED
+#   If you're familliar with YAML files, you should know that tabs
+# are *NOT* allowed. Really. You should *ONLY* indent the file using
+# SPACES. To make your job easier, however, and to reduce the risk of
+# making mistakes, I recommend using Notepad++ and enabling the option
+# to replace tabs with spaces.
+
+
+#   This is the general section.
+#   Here you can configure most
+# ordinary options.
+General:
+
+  #   Here you can choose what mode you want to use
+  #   There are two modes currently available:
+  # TAKEOFF: This mode will put the horse into the saddle
+  # when a user takes off the saddle from his horse.
+  #
+  # RIGHTCLICK: This mode will put the horse into the saddle
+  # when a user right clicks their horse with the saddle
+  # in their (primary) hand.
+  mode: TAKEOFF
+
+  #   First, let me explain what "recursive saddles"  means:
+  # Let's say you have a portable-horse (a saddle) and you place
+  # it into the inventory of another horse. If the bellow setting
+  # is set to false, when attempting to catch that horse
+  # you will be stopped. It's recommended to set this to false to prevent
+  # players from abusing your server by creating huge NBT tags
+  # on saddles. However, Minecraft will never allow more than 512
+  # records in a NBTTagCompound.
+  allow-recursive-phorse: false
+
+  #   After a horse dies, shoud it drop it's PortableHorse saddle
+  # (if it had one, of course) rather than a normal one? Keep in
+  # mind that setting this to false would allow people to endlesly
+  # revive their horses (as even though the horse had 0 HP when killed,
+  # the plugin will automatically add 0.5 hearts to make sure it can
+  # be spawned) or people stealing each other's horses by just killing them.
+  drop-normal-saddle: true
+
+  #   When spawning the horse, should it get saddled
+  # automatically? If set to false, the user will
+  # receive a normal saddle (by default). You can change
+  # that with the 'give-saddle' option.
+  auto-saddle: true
+
+  #   This option has no effect if the above is set to true.
+  #   This sets wether the user should receive the saddle in his/her
+  # inventory instead of auto-placing it on the horse.
+  # BEWARE: The give-saddle option has 3 fallback options
+  # in case the user's inventory is full: Give the saddle
+  # by replacing the first item in the user's inventory (FIRSTITEM),
+  # place the saddle on the ground (GROUND) or eventually
+  # just place it on the horse (HORSE).
+  give-saddle: true
+
+  #   Read the description from the 'give-saddle'
+  # field (the 'BEWARE' section).
+  auto-saddle-fallback-method: HORSE
+
+  #   Should the horse's armor (if any) be stored in the PortableHorse
+  # saddle? Donkeys can't have armor so for them this option will
+  # be automatically ignored.
+  store-armor: true
+
+  #   Should we store the inventory (if any) of the donkey/mule?
+  # Normal horse's can't have an inventory so tis option will
+  # be automatically ignored fot them.
+  store-inventory: true
+
+  #   If true, the following option will require players to use
+  # a special saddle in order to take the horse. If you want to use it,
+  # check the 'Special-saddle' section bellow the 'Mode-settings' section.
+  use-special-saddle: false
+
+  #   Should we enable the help command? It can be viewed by using /ph help
+  # in-game and contains various information about the plugin and how to use
+  # it's features. You can disable it completly if you want, but you should
+  # keep in mind that it's contents are FULLY CONFIGURABLE. You can edit them
+  # in the "help-command" sub-section found inside the "Messages" section.
+  enable-help-command: true
+
+  #   When spawning your horse, should you automatically mount it?
+  auto-mount: false
+
+
+  #   When dismounting the horse, should it automatically be despawned into the saddle?
+  auto-take-on-dismount: false
+
+  #   Whether or not to allow CombatLog integration. This will stop players from spawning
+  # horses while in combat.
+  combatlog-integration: false
+
+  #   Whether to create a fake player death event to solve issues with death messages when
+  # a player is killed by being hit with a portable horse saddle. Requires ProtocolLib.
+  enable-fake-death-event: true
+
+#   This section contains details about the lore and display name of a saddle
+# that represents a portable horse.
+PortableHorse:
+  #   Should the saddle have an enchanted effect on it?
+  enchanted: true
+
+  #   Should the saddle display the color of the horse inside the lore of the item?
+  show-color: true
+
+  #   Should the saddle display the style of the horse inside the lore of the item?
+  show-style: true
+
+  #   Should the saddle display the variant of the horse inside the lore of the item?
+  show-variant: true
+
+  #   Should the saddle display the jump strength of the horse inside the lore of the item?
+  show-jump-strength: true
+
+  #   Should the saddle display wether the horse has a mounted chest inside the lore of the item?
+  show-has-chest: true
+
+  #   Should the health of the horse be displayed?
+  show-health: true
+
+  #   Should the movement speed of the horse be displayed?
+  show-speed: true
+
+  #   Bellow you can translate different horse colors, variants and types into your native language.
+  # If your server's language is English, the bellow set-up should work right out of the box.
+  # For the ungrouped settings (data, color, style, variant, jump and health) you can use placeholders
+  # and also add more lines. All the aditional lines will be added to the lore of the saddle. As for
+  # the placeholders, those are pretty much self-explanatory.
+  Translations:
+    Display-name: "&b&oPortableHorse"
+    Colors:
+      BLACK: "Pitch black"
+      BROWN: "Light brown"
+      CHESTNUT: "Chestnut"
+      CREAMY: "Very light brown"
+      DARK_BROWN: "Dark brown"
+      GRAY: "Gray"
+      WHITE: "Snow white"
+    Styles:
+      BLACK_DOTS: "Small black dots"
+      WHITE_DOTS: "Round white dots"
+      NONE: "No markings"
+      WHITE: "White socks or stripes"
+      WHITEFIELD: "Milky splotches"
+    Variants:
+      DONKEY: "Donkey"
+      HORSE: "Normal horse"
+      MULE: "Mule"
+      SKELETON_HORSE: "Skeleton horse"
+      UNDEAD_HORSE: "Undead horse"
+    has-chest: "This horse has a mounted chest"
+    data:
+      - "Horse information"
+    color:
+      - "Color: %color%"
+    style:
+      - "Style: %style%"
+    variant:
+      - "Type: %variant%"
+    jump:
+      - "Jump strength: %jump-strength%"
+    speed:
+      - "Horse movement speed: %movement-speed%"
+
+    #   Notice the double backslash used here? I have to double them
+    # in order to mark the actual backslash as escaped. Therefore, after
+    # parsing, it will only show up as a single backslash.
+    health:
+      - "Health: %current-health%\\%max-health%"
+
+#   Here are the setting that only have effect when the plugin
+# runs in a certain mode. Thing to note: For the sake of keeping
+# everything short, I'll call any other people that are NOT the
+# owners of the horse "strangers"
+Mode-settings:
+  takeoff:
+
+    #   Should strangers be allowed to take the horse
+    # into the saddle?
+    allow-stranger-take-off: false
+
+    #   If the player's inventory is full when they take the horse into
+    # the saddle, what should happen to the saddle? There are three values
+    # you can set this option to: GROUND, CANCEL and FIRSTITEM
+    # The GROUND option will throw the saddle okn the ground, sending the player
+    # a configurable message telling him the saddle has been dropped.
+    # CANCEL will simply cancel the operation, keeping the saddle on the horse and
+    # sending the player a configurable message announcing him why the operation
+    # couldn't be done.
+    # The FIRSTITEM option will simply replace the first item in the user's inventory and
+    # send him a customizable message about why that happened.
+    take-off-full-inv-mode: CANCEL
+
+  rightclick:
+
+    #   Should strangers be allowed to take the horse in
+    # their saddle even though they are not the owners of
+    # the horses? Please note that setting this to true
+    # will automatically make the stranger the new owner
+    # of the horse.
+    allow-stranger-take: false
+
+    #   Should players be allowed to override saddles?
+    # If a user right clicks a horse with a saddle that
+    # already is a PortableHorse, should the current contents
+    # of the saddle simply be overriden? You should note
+    # that this setting only makes sense if the special saddle
+    # is not enabled, as a saddle can't be a special saddle and
+    # a PortableHorse at the same time.
+    allow-override: false
+
+#   This section contains information about the special saddle
+# you want your players to use for creating portableHorses.
+# If you wish to enable it, set the field 'use-special-saddle' under
+# the 'General' section to true first.
+Special-saddle:
+
+  #   Do you want the reciepe to be craftable in-game or only
+  # available by command? The command to get the special saddle
+  # is /ph getsaddle
+  craftable: true
+
+  #   If the above setting is true, you can set the reciepe here.
+  # It's pretty much self-explanatory, but you can find an image
+  # of the slot numbers here: http://i.imgur.com/DbZivJi.png
+  recipe:
+    slot1: AIR
+    slot2: ENDER_PEARL
+    slot3: AIR
+    slot4: AIR
+    slot5: SADDLE
+    slot6: AIR
+    slot7: AIR
+    slot8: AIR
+    slot9: AIR
+    ignore-order: false
+
+  #   The name of the saddle. You can use color codes.
+  name: "&b&oPortableHorse Saddle"
+
+  #   The lore of the saddle. Add more lines if needed.
+  # You can also use color codes.
+  lore:
+    - "&c&oYou can use this saddle and take"
+    - "&c&ohorses into it by placing it on a horse"
+    - "&c&oand then taking it back."
+
+  #   Should the special saddle have an enchanted effect on it?
+  enchanted: true
+
+#   Here all the messages the plugin will display can be configured
+# If you don't want a message to be displayed AT ALL you can simply
+# leave it blank, like this: ""
+Messages:
+
+  #   Here you can configure the contents of the help command (/ph help)
+  # if the command is enabled. To add new lines, simply add more entries
+  # to the list.
+  help-command:
+    - "&b[]&e&m-------&a&m[&fPortable&bHorses&a&m]&e&m-------"
+    - "&b[]&c Command guide:"
+    - "&b[]&e/ph help&b: &aDisplays this help page."
+    - "&b[]&e/ph reload&b: &aReloads the configuration."
+    - "&b[]&e/ph givesaddle&b: &aGives you the special"
+    - "&b[]&asaddle needed to catch horses (if enabled in config)."
+    - "&b[]&e&m----------------------------"
+
+  #   This will be the prefix before ALL messages bellow (that is, excluding
+  # the messages in the help command).
+  prefix: "&a[&fPortable&bHorses&a]"
+
+  #   The message users will get after successfully spawning a horse from
+  # their portable horse saddle.
+
+  horse-spawned: "You spawned your portable horse!"
+  #   The message users will get after successfully taking a horse in
+  # their portable horse saddle.
+
+  horse-taken: "You put your horse into the saddle!"
+  cant-use-nested-saddle: "&cYou can't take horses which already have other portable horses in their inventories."
+  take-off-saddle-dropped: "&cThe PortableHorse saddle was dropped on the ground because your inventory was full!"
+  take-off-operation-cancelled: "&cYou can't take this horse into a saddle because you are lacking space in your inventory!"
+  take-off-first-item-replaced: "&cYou din't have enough space in your inventory to take that horse, so the item in your first slot was replaced by the saddle."
+  take-off-denied-not-owner: "&cYou are not the owner of this horse so you can't take it into your saddle!"
+  auto-saddle-first-item-replaced: "&cYou didn't have enough room in your inventory to store the saddle of this horse, so the item in the first slot of your inventory was replaced by a saddle."
+  auto-saddle-saddle-dropped: "&cYou didn't have enough space in yur inventory to store the saddle of this horse, so it's saddle was dropped."
+  reload: "&aPlugin configuration successfully reloaded!"
+  player-not-found: "&cThe player specified does not exist."
+  special-saddle-not-enabled: "&cI'm sorry, but the special saddle is not enabled so you can't get it using this command!"
+  cant-send-from-console: "&cYou can't issue this command from the console!"
+  no-space-for-special-saddle: "&cYou don't have enough space in your inventory to get the special saddle."
+  special-saddle-given: "&aYou got your special saddle!"
+  cant-override-phorse: "&cThe saddle you currently have in hand is already a PortableHorse!"
+  cant-place: "&cI'm sorry, but you can't spawn a PortableHorse here!"
+  combatlog-cant-spawn: "&cI'm sorry, but you can't spawn a PortableHorse while CombatLogged!"
+  cant-use-no-permission: "&cI'm sorry, but you don't have the permission to use PortableHorses!"
+
+
+
+#   And, here we are! You made it! That was all the configuration you had to do!

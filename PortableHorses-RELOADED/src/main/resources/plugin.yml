@@ -1,0 +1,56 @@
+name: PortableHorses
+description: "Allows players to take horses into saddles."
+softdepend: [CombatLog, ProtocolLib]
+prefix: PortableHorses
+author: dadus33
+main: net.nordicraft.phorses.PortableHorses
+version: ${project.version}
+commands:
+  ph:
+    aliases: [portablehorses, portablehorse, phorse, phorses]
+    permission: portablehorses.command
+    usage: "§cProper usage: /ph <argument>. Possible arguments are help, givesaddle or reload."
+    description: "The base command of the PortableHorses plugin."
+permissions:
+  portablehorses.command:
+    description: "Gives users access to the base /ph command."
+    default: op
+  portablehorses.command.givesaddle:
+    description: "Gives users access to the /ph givesaddle command."
+    default: op
+  portablehorses.command.help:
+    description: "Gives users access to the /ph help command."
+    default: op
+  portablehorses.command.reload:
+    description: "Gives users access to the /ph reload command."
+    default: op
+  portablehorses.use:
+    description: "Allows users to take horses into saddles."
+    default: op
+  portablehorses.use.ignore-protections:
+    description: "Allows users to spawn portable horses in any location, protected or not."
+    default: op
+  portablehorses.use.ignore-ownership:
+    description: "Allows users to take horses into saddles even when not belonging to them."
+    default: op
+  portablehorses.*:
+    description: "Gives full access to all portablehorses related things."
+    default: op
+    children:
+      portablehorses.command: true
+      portablehorses.command.givesaddle: true
+      portablehorses.command.help: true
+      portablehorses.command.reload: true
+      portablehorses.use: true
+      portablehorses.use.ignore-ownership: true
+      portablehorses.use.ignore-protections: true
+  portablehorses.playerpack:
+    description: "Permission pack that allows players access to the most basic portablehorses features."
+    default: false
+    children:
+      portablehorses.command: true
+      portablehorses.command.help: true
+      portablehorses.use: true
+
+
+
