@@ -1,7 +1,9 @@
 package net.nordicraft.phorses.implementations.v1_9_R2;
 
-import net.minecraft.server.v1_9_R2.*;
-import net.nordicraft.phorses.api.NMSHandler;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
+
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftHorse;
@@ -12,23 +14,28 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
+import net.minecraft.server.v1_9_R2.AttributeInstance;
+import net.minecraft.server.v1_9_R2.BlockPosition;
+import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.EntityHorse;
+import net.minecraft.server.v1_9_R2.EntityInsentient;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.MathHelper;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.WorldServer;
+import net.nordicraft.phorses.api.NMSHandler;
 
 /**
  * Created by Vlad on 16.08.2016.
  */
+@SuppressWarnings("unchecked")
 public class Handler1_9_R2 implements NMSHandler {
 
-
-    private Plugin instance;
     private MethodHandle canAddEntity;
     private MethodHandle onEntityAdded;
 
     public Handler1_9_R2(Plugin instance){
-        this.instance = instance;
-
         try {
             Method canAddEntity = WorldServer.class.getDeclaredMethod("i", Entity.class);
             Method onEntityAdded = World.class.getDeclaredMethod("b", Entity.class);

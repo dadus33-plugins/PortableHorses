@@ -16,7 +16,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
-
+@SuppressWarnings("unchecked")
 public class Handler1_11_R1 implements ModernNMSHandler {
 
     Plugin instance;
@@ -267,7 +267,7 @@ public class Handler1_11_R1 implements ModernNMSHandler {
 
     @Override
     public LivingEntity forceSpawn(EntityType type, Location spawnLocation){
-        Class<? extends LivingEntity> entityClass = (Class<? extends LivingEntity>)type.getEntityClass();
+		Class<? extends LivingEntity> entityClass = (Class<? extends LivingEntity>)type.getEntityClass();
         Entity nmsEntity = ((CraftWorld)spawnLocation.getWorld()).createEntity(spawnLocation, entityClass);
         try {
             loadEntity(nmsEntity, (CraftWorld)spawnLocation.getWorld());

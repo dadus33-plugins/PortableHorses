@@ -41,7 +41,6 @@ public class PHCommand implements CommandExecutor, TabCompleter {
     }
 
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String label, String[] args) {
         if(args.length < 1 || args.length > 2){

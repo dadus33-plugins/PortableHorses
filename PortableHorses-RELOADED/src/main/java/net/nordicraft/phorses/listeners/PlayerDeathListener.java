@@ -1,8 +1,8 @@
 package net.nordicraft.phorses.listeners;
 
-import net.nordicraft.phorses.PortableHorses;
-import net.nordicraft.phorses.api.NMSHandler;
-import net.nordicraft.phorses.utils.Storage;
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
@@ -15,18 +15,16 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Map;
+import net.nordicraft.phorses.PortableHorses;
+import net.nordicraft.phorses.api.NMSHandler;
 
 public class PlayerDeathListener implements Listener {
 
     private final NMSHandler handler;
-    private final Storage c;
     private final PortableHorses plugin;
 
-    public PlayerDeathListener(NMSHandler handler, Storage config, PortableHorses plugin){
+    public PlayerDeathListener(NMSHandler handler, PortableHorses plugin){
         this.handler = handler;
-        this.c = config;
         this.plugin = plugin;
     }
 

@@ -41,7 +41,6 @@ public class CustomConfig{
 			InputStream defConfigStream = plugin.getResource(config.name + ".yml");
 
 			if (defConfigStream != null) {
-				@SuppressWarnings("deprecation")
 				YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8));
 				config.fileConfig.setDefaults(defConfig);
 			}

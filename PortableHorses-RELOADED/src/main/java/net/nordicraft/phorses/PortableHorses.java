@@ -1,7 +1,26 @@
 package net.nordicraft.phorses;
 
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+
 import net.nordicraft.phorses.api.NMSHandler;
 import net.nordicraft.phorses.commands.PHCommand;
 import net.nordicraft.phorses.implementations.v1_10_R1.Handler1_10_R1;
@@ -21,19 +40,6 @@ import net.nordicraft.phorses.utils.Config;
 import net.nordicraft.phorses.utils.CustomConfig;
 import net.nordicraft.phorses.utils.Storage;
 import net.nordicraft.phorses.utils.Styler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.logging.Level;
 
 /**
  * Copyright (C) 2016 Vlad Ardelean - All Rights Reserved
@@ -200,7 +206,7 @@ public class PortableHorses extends JavaPlugin {
         spawnListener = new SpawnListener(nmsHandler, storage, styler);
         getServer().getPluginManager().registerEvents(spawnListener, this);
         if(storage.ENABLE_FAKE_DEATH_EVENT){
-            playerDeathListener = new PlayerDeathListener(nmsHandler, storage, this);
+            playerDeathListener = new PlayerDeathListener(nmsHandler, this);
             getServer().getPluginManager().registerEvents(playerDeathListener, this);
         }
         getCommand("ph").setTabCompleter(phcommand);

@@ -17,6 +17,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("unchecked")
 public class Handler1_12_R1 implements ModernNMSHandler {
 
     Plugin instance;
