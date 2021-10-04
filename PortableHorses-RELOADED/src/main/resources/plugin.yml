@@ -1,10 +1,12 @@
 name: PortableHorses
 description: "Allows players to take horses into saddles."
-softdepend: [CombatLog, ProtocolLib]
+depend: [ProtocolLib]
+softdepend: [CombatLog]
 prefix: PortableHorses
 author: dadus33
 main: net.nordicraft.phorses.PortableHorses
 version: ${project.version}
+
 commands:
   ph:
     aliases: [portablehorses, portablehorse, phorse, phorses]

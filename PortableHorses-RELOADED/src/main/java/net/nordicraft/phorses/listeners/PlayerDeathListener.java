@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.nordicraft.phorses.PortableHorses;
 import net.nordicraft.phorses.api.NMSHandler;
 
+@SuppressWarnings("deprecation")
 public class PlayerDeathListener implements Listener {
 
     private final NMSHandler handler;

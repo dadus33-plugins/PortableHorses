@@ -5,6 +5,7 @@ import net.nordicraft.phorses.PortableHorses;
 import net.nordicraft.phorses.api.NMSHandler;
 import net.nordicraft.phorses.utils.Storage;
 import net.nordicraft.phorses.utils.Styler;
+
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("deprecation")
 public class RightClickListener implements Listener {
     final NMSHandler handler;
     final Storage c;
@@ -31,7 +33,7 @@ public class RightClickListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onRightClick(PlayerInteractEntityEvent e){
         if(!PortableHorses.newHorseSystem()) {
-            ItemStack hand = e.getPlayer().getItemInHand();
+			ItemStack hand = e.getPlayer().getItemInHand();
             if (hand == null || !(e.getRightClicked() instanceof Horse)) {
                 return;
             }

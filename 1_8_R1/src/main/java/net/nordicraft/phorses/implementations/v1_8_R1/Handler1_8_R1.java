@@ -26,7 +26,7 @@ import net.minecraft.server.v1_8_R1.NBTTagCompound;
 import net.minecraft.server.v1_8_R1.World;
 import net.nordicraft.phorses.api.NMSHandler;
 
-public class Handler1_8_R1 implements NMSHandler {
+public class Handler1_8_R1 extends NMSHandler {
 
 	private MethodHandle onEntityAdded;
 
@@ -90,9 +90,7 @@ public class Handler1_8_R1 implements NMSHandler {
 	public double getSpeedOfHorse(LivingEntity h) {
 		EntityHorse nmsHorse = ((CraftHorse) h).getHandle();
 		AttributeInstance speed = nmsHorse.getAttributeInstance(GenericAttributes.d);
-		double value = -1D;
-		value = speed.getValue();
-		return value;
+		return speed.getValue();
 	}
 
 	@Override
@@ -149,6 +147,7 @@ public class Handler1_8_R1 implements NMSHandler {
 		return (LivingEntity) nmsEntity.getBukkitEntity();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public LivingEntity spawn(EntityType type, Location spawnLocation) {
 		Class<? extends LivingEntity> entityClass = (Class<? extends LivingEntity>) type.getEntityClass();
@@ -163,6 +162,7 @@ public class Handler1_8_R1 implements NMSHandler {
 		return !nmsSaddle.hasTag() ? false : nmsSaddle.getTag().hasKey("fake-saddle");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadEntity(Entity entity, CraftWorld craftWorld) throws Throwable {
 		World world = craftWorld.getHandle();
 		((EntityInsentient) entity).prepare(world.E(new BlockPosition(entity)), null);

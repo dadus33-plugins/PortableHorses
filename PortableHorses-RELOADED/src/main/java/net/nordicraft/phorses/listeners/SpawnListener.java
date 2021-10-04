@@ -2,10 +2,10 @@ package net.nordicraft.phorses.listeners;
 
 import me.iiSnipez.CombatLog.CombatLog;
 import net.nordicraft.phorses.PortableHorses;
-import net.nordicraft.phorses.api.ModernNMSHandler;
 import net.nordicraft.phorses.api.NMSHandler;
 import net.nordicraft.phorses.utils.Storage;
 import net.nordicraft.phorses.utils.Styler;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class SpawnListener implements Listener {
 
     private final NMSHandler handler;
@@ -111,9 +112,9 @@ public class SpawnListener implements Listener {
             Horse h;
 
             if(p.hasPermission("portablehorses.use.ignore-protections")){
-                h = (Horse) handler.forceSpawn(((ModernNMSHandler)handler).getEntityType(saddle), spawn);
+                h = (Horse) handler.forceSpawn(handler.getEntityType(saddle), spawn);
             }else{
-                h = (Horse) handler.spawn(((ModernNMSHandler)handler).getEntityType(saddle), spawn);
+                h = (Horse) handler.spawn(handler.getEntityType(saddle), spawn);
             }
             
             if (!h.isValid()) {
@@ -166,9 +167,9 @@ public class SpawnListener implements Listener {
         }else{
             AbstractHorse h;
             if(p.hasPermission("portablehorses.use.ignore-protections")){
-                h = (AbstractHorse) handler.forceSpawn(((ModernNMSHandler)handler).getEntityType(saddle), spawn);
+                h = (AbstractHorse) handler.forceSpawn(handler.getEntityType(saddle), spawn);
             }else{
-                h = (AbstractHorse) handler.spawn(((ModernNMSHandler)handler).getEntityType(saddle), spawn);
+                h = (AbstractHorse) handler.spawn(handler.getEntityType(saddle), spawn);
             }
 
             if (h == null || !h.isValid()) {

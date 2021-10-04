@@ -17,7 +17,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("unchecked")
-public class Handler1_8_R2 implements NMSHandler {
+public class Handler1_8_R2 extends NMSHandler {
 
 	private MethodHandle onEntityAdded;
 

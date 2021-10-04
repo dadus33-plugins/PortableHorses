@@ -1,7 +1,9 @@
 package net.nordicraft.phorses.implementations.v1_8_R3;
 
-import net.minecraft.server.v1_8_R3.*;
-import net.nordicraft.phorses.api.NMSHandler;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
+
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHorse;
@@ -12,17 +14,23 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
+import net.minecraft.server.v1_8_R3.AttributeInstance;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityHorse;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.MathHelper;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
+import net.nordicraft.phorses.api.NMSHandler;
 
 @SuppressWarnings("unchecked")
-public class Handler1_8_R3 implements NMSHandler {
+public class Handler1_8_R3 extends NMSHandler {
 
 	private MethodHandle onEntityAdded;
 
 	public Handler1_8_R3(Plugin instance) {
-
 		try {
 			Method onEntityAdded = World.class.getDeclaredMethod("a", Entity.class);
 
@@ -38,13 +46,8 @@ public class Handler1_8_R3 implements NMSHandler {
 	public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
 		NBTTagCompound saddleTag;
 		net.minecraft.server.v1_8_R3.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-		saddleTag = nmsSaddle.getTag();
-		if (saddleTag != null) {
-			saddleTag.setBoolean("phorse", true);
-		} else {
-			saddleTag = new NBTTagCompound();
-			saddleTag.setBoolean("phorse", true);
-		}
+		saddleTag = nmsSaddle.hasTag() ? nmsSaddle.getTag() : new NBTTagCompound();
+		saddleTag.setBoolean("phorse", true);
 		NBTTagCompound horseTag = new NBTTagCompound();
 		EntityHorse nmsHorse = ((CraftHorse) horse).getHandle();
 		nmsHorse.b(horseTag);
@@ -79,35 +82,7 @@ public class Handler1_8_R3 implements NMSHandler {
 	public double getSpeedOfHorse(LivingEntity h) {
 		EntityHorse nmsHorse = ((CraftHorse) h).getHandle();
 		AttributeInstance speed = nmsHorse.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-		double value = -1D;
-		value = speed.getValue();
-		return value;
-	}
-
-	@Override
-	public boolean isPHorse(ItemStack saddle) {
-		NBTTagCompound saddleTag;
-		net.minecraft.server.v1_8_R3.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-		if (!nmsSaddle.hasTag()) {
-			return false;
-		}
-		saddleTag = nmsSaddle.getTag();
-		if (saddleTag.hasKey("phorse")) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isSpecialSaddle(ItemStack saddle) {
-		net.minecraft.server.v1_8_R3.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-		if (!nmsSaddle.hasTag()) {
-			return false;
-		}
-		if (nmsSaddle.getTag().hasKey("spsaddle")) {
-			return true;
-		}
-		return false;
+		return speed.getValue();
 	}
 
 	@Override
@@ -163,5 +138,9 @@ public class Handler1_8_R3 implements NMSHandler {
 		world.entityList.add(entity);
 		onEntityAdded.invoke(world, entity);
 	}
-
+	
+	@Override
+	public EntityType getEntityType(ItemStack saddle) {
+		return super.getEntityType(saddle);
+	}
 }

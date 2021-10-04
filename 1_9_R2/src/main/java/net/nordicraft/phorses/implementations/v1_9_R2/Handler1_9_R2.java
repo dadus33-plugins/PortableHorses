@@ -30,7 +30,7 @@ import net.nordicraft.phorses.api.NMSHandler;
  * Created by Vlad on 16.08.2016.
  */
 @SuppressWarnings("unchecked")
-public class Handler1_9_R2 implements NMSHandler {
+public class Handler1_9_R2 extends NMSHandler {
 
     private MethodHandle canAddEntity;
     private MethodHandle onEntityAdded;

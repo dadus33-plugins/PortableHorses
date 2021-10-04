@@ -1,6 +1,9 @@
 package net.nordicraft.phorses.utils;
 
-import net.nordicraft.phorses.PortableHorses;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AbstractHorse;
@@ -9,16 +12,13 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+import net.nordicraft.phorses.PortableHorses;
 
+@SuppressWarnings("deprecation")
 public class Styler {
 
-
-    Storage c;
-    PortableHorses plugin;
-
+    private Storage c;
+    private PortableHorses plugin;
 
     public Styler(Storage storage, PortableHorses plugin){
         this.c = storage;
@@ -67,8 +67,8 @@ public class Styler {
 
         if(c.SHOW_HEALTH) {
             List<String> health = new ArrayList<String>();
-            double chealth = h.getHealth()>0.5D ? h.getHealth() : 1.0D;
-            double mhealth = h.getMaxHealth();
+            double chealth = h.getHealth() > 0.5D ? h.getHealth() : 1.0D;
+            double mhealth = EntityUtils.getMaxHealth(h);
             for (String s : c.HEALTH) {
                 health.add(s.replaceAll(Pattern.quote("%current-health%"), String.valueOf(chealth)).
                         replaceAll(Pattern.quote("%max-health%"), String.valueOf(mhealth)));
@@ -147,7 +147,7 @@ public class Styler {
         if(c.SHOW_HEALTH) {
             List<String> health = new ArrayList<String>();
             double chealth = h.getHealth()>0.5D ? h.getHealth() : 1.0D;
-            double mhealth = h.getMaxHealth();
+            double mhealth = EntityUtils.getMaxHealth(h);
             for (String s : c.HEALTH) {
                 health.add(s.replaceAll(Pattern.quote("%current-health%"), String.valueOf(chealth)).
                         replaceAll(Pattern.quote("%max-health%"), String.valueOf(mhealth)));

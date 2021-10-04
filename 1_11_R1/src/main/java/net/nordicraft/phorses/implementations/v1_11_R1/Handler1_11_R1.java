@@ -1,23 +1,48 @@
 package net.nordicraft.phorses.implementations.v1_11_R1;
 
-import net.minecraft.server.v1_11_R1.*;
-import net.minecraft.server.v1_11_R1.Entity;
-import net.nordicraft.phorses.api.ModernNMSHandler;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.entity.*;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftAbstractHorse;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftDonkey;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftHorse;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMule;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftSkeletonHorse;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftZombieHorse;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.entity.Donkey;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mule;
+import org.bukkit.entity.SkeletonHorse;
+import org.bukkit.entity.ZombieHorse;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
+import net.minecraft.server.v1_11_R1.AttributeInstance;
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.Entity;
+import net.minecraft.server.v1_11_R1.EntityHorse;
+import net.minecraft.server.v1_11_R1.EntityHorseAbstract;
+import net.minecraft.server.v1_11_R1.EntityHorseDonkey;
+import net.minecraft.server.v1_11_R1.EntityHorseMule;
+import net.minecraft.server.v1_11_R1.EntityHorseSkeleton;
+import net.minecraft.server.v1_11_R1.EntityHorseZombie;
+import net.minecraft.server.v1_11_R1.EntityInsentient;
+import net.minecraft.server.v1_11_R1.GenericAttributes;
+import net.minecraft.server.v1_11_R1.MathHelper;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.World;
+import net.minecraft.server.v1_11_R1.WorldServer;
+import net.nordicraft.phorses.api.NMSHandler;
+
 @SuppressWarnings("unchecked")
-public class Handler1_11_R1 implements ModernNMSHandler {
+public class Handler1_11_R1 extends NMSHandler {
 
     Plugin instance;
     private MethodHandle canAddEntity;
@@ -52,7 +77,7 @@ public class Handler1_11_R1 implements ModernNMSHandler {
             saddleTag.setBoolean("phorse", true);
         }
         NBTTagCompound horseTag = new NBTTagCompound();
-        saddleTag.setString("entype", horse.getType().toString());
+        saddleTag.setString("entype", horse.getType().name());
         if(horse instanceof Horse){
             EntityHorse nmsHorse = ((CraftHorse)horse).getHandle();
             nmsHorse.b(horseTag);
@@ -249,7 +274,7 @@ public class Handler1_11_R1 implements ModernNMSHandler {
     @Override
     public EntityType getEntityType(ItemStack saddle){
         net.minecraft.server.v1_11_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-        EntityType t = EntityType.fromName(nmsSaddle.getTag().getString("entype"));
+        EntityType t = EntityType.valueOf(nmsSaddle.getTag().getString("entype"));
         if(t==null){
             NBTTagCompound tag = nmsSaddle.getTag();
             int type = ((NBTTagCompound)tag.get("horsetag")).getInt("Type");

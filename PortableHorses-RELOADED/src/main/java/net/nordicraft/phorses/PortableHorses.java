@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -23,14 +22,6 @@ import com.comphenix.protocol.ProtocolManager;
 
 import net.nordicraft.phorses.api.NMSHandler;
 import net.nordicraft.phorses.commands.PHCommand;
-import net.nordicraft.phorses.implementations.v1_10_R1.Handler1_10_R1;
-import net.nordicraft.phorses.implementations.v1_11_R1.Handler1_11_R1;
-import net.nordicraft.phorses.implementations.v1_12_R1.Handler1_12_R1;
-import net.nordicraft.phorses.implementations.v1_8_R1.Handler1_8_R1;
-import net.nordicraft.phorses.implementations.v1_8_R2.Handler1_8_R2;
-import net.nordicraft.phorses.implementations.v1_8_R3.Handler1_8_R3;
-import net.nordicraft.phorses.implementations.v1_9_R1.Handler1_9_R1;
-import net.nordicraft.phorses.implementations.v1_9_R2.Handler1_9_R2;
 import net.nordicraft.phorses.listeners.PlayerDeathListener;
 import net.nordicraft.phorses.listeners.RightClickListener;
 import net.nordicraft.phorses.listeners.SpawnListener;
@@ -40,16 +31,11 @@ import net.nordicraft.phorses.utils.Config;
 import net.nordicraft.phorses.utils.CustomConfig;
 import net.nordicraft.phorses.utils.Storage;
 import net.nordicraft.phorses.utils.Styler;
+import net.nordicraft.phorses.utils.Version;
 
-/**
- * Copyright (C) 2016 Vlad Ardelean - All Rights Reserved
- * You are not allowed to edit, modify or
- * decompile the contents of this file and/or
- * any other file found in the enclosing jar
- * unless explicitly permitted by me.
- * Written by Vlad Ardelean <LongLiveVladerius@gmail.com>
- */
+@SuppressWarnings("deprecation")
 public class PortableHorses extends JavaPlugin {
+	
     private NMSHandler nmsHandler;
     private Storage storage;
     private CustomConfig handler;
@@ -60,25 +46,23 @@ public class PortableHorses extends JavaPlugin {
     private Listener playerDeathListener;
     private ItemUpdatePacketListener itemUpdatePacketListener;
     private Styler styler;
-    private static boolean post111;
     private PHCommand phcommand;
     private static ItemStack specialSaddle = null;
 
-
     public void onEnable(){
         instance = this;
-        post111 = isPost111();
-        switch(getVersion(Bukkit.getServer())){
-            case "v1_8_R1": nmsHandler = new Handler1_8_R1(this); break;
-            case "v1_8_R2": nmsHandler = new Handler1_8_R2(this); break;
-            case "v1_8_R3": nmsHandler = new Handler1_8_R3(this); break;
-            case "v1_9_R1": nmsHandler = new Handler1_9_R1(this); break;
-            case "v1_9_R2": nmsHandler = new Handler1_9_R2(this); break;
-            case "v1_10_R1": nmsHandler = new Handler1_10_R1(this); break;
-            case "v1_11_R1": nmsHandler = new Handler1_11_R1(this); break;
-            case "v1_12_R1": nmsHandler = new Handler1_12_R1(this); break;
-        }
-
+        Version version = Version.getVersion();
+		if(version.isSupported())
+			PortableHorses.instance().getLogger().info("Loading support for " + version.name().toLowerCase());
+		else
+			PortableHorses.instance().getLogger().info("Version " + version.name().toLowerCase() + " isn't supported yet.");
+		try {
+			nmsHandler = (NMSHandler) Class.forName("net.nordicraft.phorses.implementations." + version.getHandlerName())
+					.getConstructor(Plugin.class).newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
         handler = new CustomConfig(this);
         config = new Config("config");
         if (config.file == null || config.fileConfig == null){
@@ -270,27 +254,6 @@ public class PortableHorses extends JavaPlugin {
 
     }
 
-
-
-    private static String getVersion(Server server) {
-        final String packageName = server.getClass().getPackage().getName();
-
-        return packageName.substring(packageName.lastIndexOf('.') + 1);
-    }
-
-    private boolean isPost111(){
-        String version = getVersion(Bukkit.getServer());
-        switch(version){
-            case "v1_8_R1": return false;
-            case "v1_8_R2": return false;
-            case "v1_8_R3": return false;
-            case "v1_9_R1": return false;
-            case "v1_9_R2": return false;
-            case "v1_10_R1": return false;
-            default: return true;
-        }
-    }
-
     public NMSHandler getHandler(){
         return this.nmsHandler;
     }
@@ -310,7 +273,7 @@ public class PortableHorses extends JavaPlugin {
 
 
     public static boolean newHorseSystem(){
-        return post111;
+        return Version.getVersion().isNewHorseSystem();
     }
 
 }

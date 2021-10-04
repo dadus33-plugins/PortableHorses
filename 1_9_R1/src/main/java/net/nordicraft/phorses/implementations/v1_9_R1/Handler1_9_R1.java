@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
  * Created by Vlad on 16.08.2016.
  */
 @SuppressWarnings("unchecked")
-public class Handler1_9_R1 implements NMSHandler {
+public class Handler1_9_R1 extends NMSHandler {
 
 	private MethodHandle canAddEntity;
 	private MethodHandle onEntityAdded;

@@ -5,33 +5,63 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Copyright (C) 2016 Vlad Ardelean - All Rights Reserved
- * You are not allowed to edit, modify or
- * decompile the contents of this file and/or
- * any other file found in the enclosing jar
- * unless explicitly permitted by me.
- * Written by Vlad Ardelean <LongLiveVladerius@gmail.com>
- */
+import net.nordicraft.phorses.utils.PacketUtils;
 
-public interface NMSHandler {
+public abstract class NMSHandler {
 
-    ItemStack transferTag(LivingEntity horse, ItemStack saddle);
+	public abstract ItemStack transferTag(LivingEntity horse, ItemStack saddle);
 
-    void spawnFromSaddle(ItemStack saddle, LivingEntity h);
+	public abstract void spawnFromSaddle(ItemStack saddle, LivingEntity h);
 
-    boolean isPHorse(ItemStack saddle);
+    public boolean isPHorse(ItemStack saddle) {
+        return hasTagWithKey(saddle, "phorse");
+    }
 
-    boolean isSpecialSaddle(ItemStack saddle);
+    public boolean isSpecialSaddle(ItemStack saddle) {
+        return hasTagWithKey(saddle, "spsaddle");
+    }
+    
+    protected boolean hasTagWithKey(ItemStack item, String tagKey) {
+    	try {
+	    	Object nmsTag = getItemTag(item);
+	        if(nmsTag == null){ // no tag
+	            return false;
+	        }
+	        return (boolean) nmsTag.getClass().getMethod("hasKey", String.class).invoke(nmsTag, tagKey);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+		}
+        return false;
+    }
+    
+    /**
+     * Get tag of the given item
+     * 
+     * @param item the item which have tag
+     * @return the tag or null if don't have tag or error
+     */
+    protected Object getItemTag(ItemStack item) {
+    	try {
+	    	Class<?> craftItemClass = PacketUtils.getObcClass("inventory.CraftItemStack");
+	    	Object nmsSaddle = craftItemClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
+	    	return nmsSaddle.getClass().getMethod("getTag").invoke(nmsSaddle);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+		}
+    }
 
-    ItemStack setSpecialSaddle(ItemStack saddle);
+	public abstract ItemStack setSpecialSaddle(ItemStack saddle);
 
-    double getSpeedOfHorse(LivingEntity h);
+	public abstract double getSpeedOfHorse(LivingEntity h);
 
-    LivingEntity forceSpawn(EntityType type, Location spawnLoc);
+	public abstract LivingEntity forceSpawn(EntityType type, Location spawnLoc);
 
-    LivingEntity spawn(EntityType type, Location spawnLocation);
+	public abstract LivingEntity spawn(EntityType type, Location spawnLocation);
 
-    boolean isFakeSaddle(ItemStack saddle);
+	public abstract boolean isFakeSaddle(ItemStack saddle);
 
+	public EntityType getEntityType(ItemStack saddle) {
+		return EntityType.HORSE;
+	}
 }

@@ -288,7 +288,7 @@ Messages:
 
   #   This will be the prefix before ALL messages bellow (that is, excluding
   # the messages in the help command).
-  prefix: "&a[&fPortable&bHorses&a]"
+  prefix: "&a[&fPortable&bHorses&a] "
 
   #   The message users will get after successfully spawning a horse from
   # their portable horse saddle.

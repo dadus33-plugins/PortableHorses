@@ -6,6 +6,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.nordicraft.phorses.api.NMSHandler;
+
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +34,8 @@ public class ItemUpdatePacketListener extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent e){
         ItemStack content = e.getPacket().getItemModifier().readSafely(0);
+        if(content == null || content.getType().equals(Material.AIR))
+        	return; // not item on hand
         if(handler.isFakeSaddle(content)){
             e.setCancelled(true);
             return;
@@ -61,7 +65,7 @@ public class ItemUpdatePacketListener extends PacketAdapter {
         }
     }
 
-    private boolean checkVisualIdentity(ItemStack first, ItemStack second){
+    public boolean checkVisualIdentity(ItemStack first, ItemStack second){
         if(first.getType() != second.getType()){
             return false;
         }

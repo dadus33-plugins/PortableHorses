@@ -4,6 +4,7 @@ import net.nordicraft.phorses.PortableHorses;
 import net.nordicraft.phorses.api.NMSHandler;
 import net.nordicraft.phorses.utils.Storage;
 import net.nordicraft.phorses.utils.Styler;
+
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Horse;
@@ -25,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
  * unless explicitly permitted by me.
  * Written by Vlad Ardelean <LongLiveVladerius@gmail.com>
  */
+@SuppressWarnings("deprecation")
 public class TakeOffListener implements Listener{
 
     final NMSHandler handler;
