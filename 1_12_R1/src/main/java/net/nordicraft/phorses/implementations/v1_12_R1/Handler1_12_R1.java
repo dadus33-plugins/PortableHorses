@@ -228,34 +228,6 @@ public class Handler1_12_R1 extends NMSHandler {
         return value;
     }
 
-
-
-    @Override
-    public boolean isPHorse(ItemStack saddle) {
-        NBTTagCompound saddleTag;
-        net.minecraft.server.v1_12_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-        if(!nmsSaddle.hasTag()){
-            return false;
-        }
-        saddleTag = nmsSaddle.getTag();
-        if(saddleTag.hasKey("phorse")){
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isSpecialSaddle(ItemStack saddle) {
-        net.minecraft.server.v1_12_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-        if(!nmsSaddle.hasTag()){
-            return false;
-        }
-        if(nmsSaddle.getTag().hasKey("spsaddle")){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public ItemStack setSpecialSaddle(ItemStack saddle){
         net.minecraft.server.v1_12_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
