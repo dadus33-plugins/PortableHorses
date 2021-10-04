@@ -1,26 +1,67 @@
 package net.nordicraft.phorses.api;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
+import net.nordicraft.phorses.utils.Maths;
 import net.nordicraft.phorses.utils.PacketUtils;
 import net.nordicraft.phorses.utils.ReflectionUtils;
 import net.nordicraft.phorses.utils.Version;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class NMSHandler {
 
-	private Object speedAttribute;
-	private Method getterAttribute;
+	protected Object speedAttribute;
+	protected Method getterAttribute, canAddEntityInWorld, addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity,
+			worldCreateEntity, getChunkAt;
+	protected Constructor<?> blockPositionConstructor;
+	protected Field entityLocX, entityLocZ;
 	
 	public NMSHandler() {
 		try {
+			// load class
+			Class<?> entityClass = PacketUtils.getNmsClass("Entity");
+			Class<?> entityLivingClass = PacketUtils.getNmsClass("EntityLiving");
+			Class<?> worldClass = PacketUtils.getNmsClass("World");
+			Class<?> worldServerClass = PacketUtils.getNmsClass("WorldServer");
 			Class<?> attributesClass = PacketUtils.getNmsClass("GenericAttributes");
-			speedAttribute = attributesClass.getDeclaredField(Version.getVersion().isNewerOrEquals(Version.V1_8_R3) ? "MOVEMENT_SPEED" : "d").get(attributesClass);
-			getterAttribute = PacketUtils.getNmsClass("EntityLiving").getDeclaredMethod("getAttributeInstance", PacketUtils.getNmsClass("IAttribute"));
+			Class<?> blockPosClass = PacketUtils.getNmsClass("BlockPosition");
+	        Class<?> craftWorldClass = PacketUtils.getObcClass("CraftWorld");
+			// get objects
+			this.speedAttribute = attributesClass.getDeclaredField(Version.getVersion().isNewerOrEquals(Version.V1_8_R3) ? "MOVEMENT_SPEED" : "d").get(attributesClass);
+			// load method
+			this.getterAttribute = entityLivingClass.getDeclaredMethod("getAttributeInstance", PacketUtils.getNmsClass("IAttribute"));
+			this.canAddEntityInWorld = worldServerClass.getDeclaredMethod(Version.getVersion().isNewerOrEquals(Version.V1_11_R1) ? "j" : "i", entityClass);
+			this.canAddEntityInWorld.setAccessible(true);
+			this.addEntityInWorld = worldClass.getDeclaredMethod("b", entityClass);
+			this.addEntityInWorld.setAccessible(true);
+			this.prepareWorld = PacketUtils.getNmsClass("EntityInsentient").getDeclaredMethod("prepare",
+					PacketUtils.getNmsClass("DifficultyDamageScaler"), PacketUtils.getNmsClass("GroupDataEntity"));
+			this.worldDamageScaler = worldClass.getDeclaredMethod("D", blockPosClass);
+			this.getChunkAt = worldClass.getDeclaredMethod("getChunkAt", int.class, int.class);
+			this.getBukkitEntity = entityClass.getDeclaredMethod("getBukkitEntity");
+			for(Method method : craftWorldClass.getDeclaredMethods()) { // for all method in craftworld
+				if(method.getName().equalsIgnoreCase("createEntity") && method.getParameterCount() == 2) { // searching for Location/Class<? extends Entity>
+			        this.worldCreateEntity = method; // set this as method
+			        break;
+				}
+			}
+			
+			// load constructors
+			this.blockPositionConstructor = blockPosClass.getDeclaredConstructor(entityClass);
+			
+			// load fields
+			this.entityLocX = entityClass.getDeclaredField("locX");
+			this.entityLocZ = entityClass.getDeclaredField("locZ");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,11 +121,34 @@ public abstract class NMSHandler {
 		}
 	}
 
-	public abstract LivingEntity forceSpawn(EntityType type, Location spawnLoc);
+	public LivingEntity forceSpawn(EntityType type, Location spawnLocation){
+        try {
+	        Class<? extends Entity> entityClass = (Class<? extends Entity>)type.getEntityClass();
+	        World world = spawnLocation.getWorld();
+	        Object entity = worldCreateEntity.invoke(world, spawnLocation, entityClass);
+	    	Object worldServer = PacketUtils.getWorldServer(world);
 
-	public abstract LivingEntity spawn(EntityType type, Location spawnLocation);
+	    	prepareWorld.invoke(entity, worldDamageScaler.invoke(worldServer, blockPositionConstructor.newInstance(entity)), null);
+	        if((boolean)canAddEntityInWorld.invoke(worldServer, entity)){
+		        int i = Maths.floor(entityLocX.getDouble(entity) / 16.0D);
+		        int j = Maths.floor(entityLocZ.getDouble(entity) / 16.0D);
+		        
+		        Object nmsChunk = getChunkAt.invoke(worldServer, i, j);
+		        nmsChunk.getClass().getDeclaredMethod("a", PacketUtils.getNmsClass("Entity")).invoke(nmsChunk, entity);
+		        ((List) PacketUtils.getNmsClass("World").getDeclaredField("entityList").get(worldServer)).add(entity);
+		        addEntityInWorld.invoke(worldServer, entity);
+	        }
+	        
+	        return (LivingEntity) getBukkitEntity.invoke(entity);
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	return null;
+		}
+    }
 
-	public abstract boolean isFakeSaddle(ItemStack saddle);
+	public boolean isFakeSaddle(ItemStack saddle) {
+		return hasTagWithKey(saddle, "fake-saddle");
+	}
 
 	public EntityType getEntityType(ItemStack saddle) {
 		return EntityType.HORSE;

@@ -10,7 +10,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHorse;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -105,20 +104,6 @@ public class Handler1_8_R3 extends NMSHandler {
 		return (LivingEntity) nmsEntity.getBukkitEntity();
 	}
 
-	@Override
-	public LivingEntity spawn(EntityType type, Location spawnLocation) {
-		Class<? extends LivingEntity> entityClass = (Class<? extends LivingEntity>) type.getEntityClass();
-
-		return ((CraftWorld) spawnLocation.getWorld()).spawn(spawnLocation, entityClass,
-				CreatureSpawnEvent.SpawnReason.CUSTOM);
-	}
-
-	@Override
-	public boolean isFakeSaddle(ItemStack saddle) {
-		net.minecraft.server.v1_8_R3.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-		return !nmsSaddle.hasTag() ? false : nmsSaddle.getTag().hasKey("fake-saddle");
-	}
-
 	private void loadEntity(Entity entity, CraftWorld craftWorld) throws Throwable {
 		World world = craftWorld.getHandle();
 		((EntityInsentient) entity).prepare(world.E(new BlockPosition(entity)), null);
@@ -128,10 +113,5 @@ public class Handler1_8_R3 extends NMSHandler {
 		world.getChunkAt(i, j).a(entity);
 		world.entityList.add(entity);
 		onEntityAdded.invoke(world, entity);
-	}
-	
-	@Override
-	public EntityType getEntityType(ItemStack saddle) {
-		return super.getEntityType(saddle);
 	}
 }

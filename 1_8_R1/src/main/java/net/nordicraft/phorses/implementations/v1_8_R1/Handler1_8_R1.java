@@ -10,7 +10,6 @@ import org.bukkit.craftbukkit.v1_8_R1.entity.CraftHorse;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -110,21 +109,6 @@ public class Handler1_8_R1 extends NMSHandler {
 		}
 
 		return (LivingEntity) nmsEntity.getBukkitEntity();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public LivingEntity spawn(EntityType type, Location spawnLocation) {
-		Class<? extends LivingEntity> entityClass = (Class<? extends LivingEntity>) type.getEntityClass();
-
-		return ((CraftWorld) spawnLocation.getWorld()).spawn(spawnLocation, entityClass,
-				CreatureSpawnEvent.SpawnReason.CUSTOM);
-	}
-
-	@Override
-	public boolean isFakeSaddle(ItemStack saddle) {
-		net.minecraft.server.v1_8_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-		return !nmsSaddle.hasTag() ? false : nmsSaddle.getTag().hasKey("fake-saddle");
 	}
 
 	@SuppressWarnings("unchecked")

@@ -3,9 +3,8 @@ package net.nordicraft.phorses.utils;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 
 public class PacketUtils {
 
@@ -91,88 +90,6 @@ public class PacketUtils {
 	}
 	
 	/**
-	 * Get the current player ping
-	 * 
-	 * @param p the player
-	 * @return the player ping
-	 */
-	public static int getPing(Player p) {
-		try {
-			Object entityPlayer = getEntityPlayer(p);
-			return entityPlayer.getClass().getField("ping").getInt(entityPlayer);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
-	/**
-	 * Create and send a packet (with only one parameter)
-	 * 
-	 * @param p the player which will receive the packet
-	 * @param packetName the name of the packet that will be created and sent
-	 * @param type the constructor type of parameter
-	 * @param data the data associated with parameter type
-	 */
-	public static void sendPacket(Player p, String packetName, Class<?> type, Object data) {
-		try {
-			sendPacket(p, getNmsClass(packetName, "network.protocol.game.").getConstructor(type).newInstance(data));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Send the packet to the specified player
-	 * 
-	 * @param p which will receive the packet
-	 * @param packet the packet to sent
-	 */
-	public static void sendPacket(Player p, Object packet) {
-		try {
-			Object playerConnection = getPlayerConnection(p);
-			playerConnection.getClass().getMethod("sendPacket", getNmsClass("Packet", "network.protocol.")).invoke(playerConnection, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Get NMS player connection of specified player
-	 * 
-	 * @param p Player of which we want to get the player connection
-	 * @return the NMS player connection
-	 */
-	public static Object getPlayerConnection(Player p) {
-		try {
-			Object entityPlayer = getEntityPlayer(p);
-			if(Version.getVersion().isNewerOrEquals(Version.V1_17_R1))
-				return entityPlayer.getClass().getField("b").get(entityPlayer);
-			else
-				return entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
-	 * Get NMS entity player of specified one
-	 * 
-	 * @param p the player that we want the NMS entity player
-	 * @return the entity player
-	 */
-	public static Object getEntityPlayer(Player p) {
-		try {
-			Object craftPlayer = CRAFT_PLAYER_CLASS.cast(p);
-			return craftPlayer.getClass().getMethod("getHandle").invoke(craftPlayer);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
 	 * Get NMS entity player of specified one
 	 * 
 	 * @param p the player that we want the NMS entity player
@@ -207,12 +124,12 @@ public class PacketUtils {
 	/**
 	 * Get the NMS world server
 	 * 
-	 * @param loc the location in the world of which we want to get the NMS world server
+	 * @param world the world of which we want to get the NMS world server
 	 * @return the world server of location's world
 	 */
-	public static Object getWorldServer(Location loc) {
+	public static Object getWorldServer(World world) {
 		try {
-			Object object = Class.forName("org.bukkit.craftbukkit." + VERSION + ".CraftWorld").cast(loc.getWorld());
+			Object object = getObcClass("CraftWorld").cast(world);
 			return object.getClass().getMethod("getHandle").invoke(object);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -232,23 +149,5 @@ public class PacketUtils {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public static Object getBoundingBox(Entity p) {
-		try {
-			//((CraftEntity) p).getHandle().getBoundingBox();
-			Object cp = CRAFT_ENTITY_CLASS.cast(p);
-			Class<?> craftMonsterClass = Class.forName("org.bukkit.craftbukkit." + VERSION + ".entity.CraftLivingEntity");
-			if(cp.getClass().isInstance(craftMonsterClass)) { // prevent protected items
-				Object ep = craftMonsterClass.getDeclaredMethod("getHandle").invoke(craftMonsterClass.cast(cp));
-				if(Version.getVersion().equals(Version.V1_7))
-					return getNmsClass("Entity", "world.entity.").getDeclaredField("boundingBox").get(ep);
-				else
-					return getNmsClass("Entity", "world.entity.").getDeclaredMethod("getBoundingBox").invoke(ep);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 }

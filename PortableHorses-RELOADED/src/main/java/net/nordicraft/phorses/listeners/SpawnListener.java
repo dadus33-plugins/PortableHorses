@@ -109,15 +109,13 @@ public class SpawnListener implements Listener {
 
 
         if(!PortableHorses.newHorseSystem()) {
-            Horse h;
+            Horse h = (Horse) spawn.getWorld().spawnEntity(spawn, handler.getEntityType(saddle));
 
-            if(p.hasPermission("portablehorses.use.ignore-protections")){
+            if((h == null || !h.isValid()) && p.hasPermission("portablehorses.use.ignore-protections")){ // if failed to spawn and we can bypass
                 h = (Horse) handler.forceSpawn(handler.getEntityType(saddle), spawn);
-            }else{
-                h = (Horse) handler.spawn(handler.getEntityType(saddle), spawn);
             }
             
-            if (!h.isValid()) {
+            if (h == null || !h.isValid()) { // already failed to spawn
                 if (c.MESSAGES_CANT_PLACE.isEmpty()) {
                     return;
                 }
@@ -169,7 +167,7 @@ public class SpawnListener implements Listener {
             if(p.hasPermission("portablehorses.use.ignore-protections")){
                 h = (AbstractHorse) handler.forceSpawn(handler.getEntityType(saddle), spawn);
             }else{
-                h = (AbstractHorse) handler.spawn(handler.getEntityType(saddle), spawn);
+                h = (AbstractHorse) spawn.getWorld().spawnEntity(spawn, handler.getEntityType(saddle));
             }
 
             if (h == null || !h.isValid()) {

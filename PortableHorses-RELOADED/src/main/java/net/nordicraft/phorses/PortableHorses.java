@@ -53,9 +53,9 @@ public class PortableHorses extends JavaPlugin {
         instance = this;
         Version version = Version.getVersion();
 		if(version.isSupported())
-			PortableHorses.instance().getLogger().info("Loading support for " + version.name().toLowerCase());
+			PortableHorses.instance().getLogger().info("Loading support for " + version.name());
 		else
-			PortableHorses.instance().getLogger().info("Version " + version.name().toLowerCase() + " isn't supported yet.");
+			PortableHorses.instance().getLogger().info("Version " + version.name() + " isn't supported yet.");
 		try {
 			nmsHandler = (NMSHandler) Class.forName("net.nordicraft.phorses.implementations." + version.getHandlerName())
 					.getConstructor(Plugin.class).newInstance(this);
