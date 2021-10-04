@@ -1,14 +1,31 @@
 package net.nordicraft.phorses.api;
 
+import java.lang.reflect.Method;
+
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 import net.nordicraft.phorses.utils.PacketUtils;
+import net.nordicraft.phorses.utils.ReflectionUtils;
+import net.nordicraft.phorses.utils.Version;
 
 public abstract class NMSHandler {
 
+	private Object speedAttribute;
+	private Method getterAttribute;
+	
+	public NMSHandler() {
+		try {
+			Class<?> attributesClass = PacketUtils.getNmsClass("GenericAttributes");
+			speedAttribute = attributesClass.getDeclaredField(Version.getVersion().isNewerOrEquals(Version.V1_8_R3) ? "MOVEMENT_SPEED" : "d").get(attributesClass);
+			getterAttribute = PacketUtils.getNmsClass("EntityLiving").getDeclaredMethod("getAttributeInstance", PacketUtils.getNmsClass("IAttribute"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public abstract ItemStack transferTag(LivingEntity horse, ItemStack saddle);
 
 	public abstract void spawnFromSaddle(ItemStack saddle, LivingEntity h);
@@ -53,7 +70,15 @@ public abstract class NMSHandler {
 
 	public abstract ItemStack setSpecialSaddle(ItemStack saddle);
 
-	public abstract double getSpeedOfHorse(LivingEntity h);
+	public double getSpeedOfHorse(LivingEntity h) {
+		try {
+			Object nmsHorse = PacketUtils.getNMSEntity(h);
+			Object speed = getterAttribute.invoke(nmsHorse, speedAttribute);
+			return (double) ReflectionUtils.callMethod(speed, "getValue");
+		} catch (Exception e) {
+			return -1;
+		}
+	}
 
 	public abstract LivingEntity forceSpawn(EntityType type, Location spawnLoc);
 

@@ -1,7 +1,9 @@
 package net.nordicraft.phorses.implementations.v1_8_R2;
 
-import net.minecraft.server.v1_8_R2.*;
-import net.nordicraft.phorses.api.NMSHandler;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
+
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftHorse;
@@ -12,9 +14,15 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
+import net.minecraft.server.v1_8_R2.BlockPosition;
+import net.minecraft.server.v1_8_R2.Entity;
+import net.minecraft.server.v1_8_R2.EntityHorse;
+import net.minecraft.server.v1_8_R2.EntityInsentient;
+import net.minecraft.server.v1_8_R2.EntityLiving;
+import net.minecraft.server.v1_8_R2.MathHelper;
+import net.minecraft.server.v1_8_R2.NBTTagCompound;
+import net.minecraft.server.v1_8_R2.World;
+import net.nordicraft.phorses.api.NMSHandler;
 
 @SuppressWarnings("unchecked")
 public class Handler1_8_R2 extends NMSHandler {
@@ -73,15 +81,6 @@ public class Handler1_8_R2 extends NMSHandler {
 		spawned.setCustomNameVisible(saddleTag.getBoolean("iscnameviz"));
 		if (saddleTag.hasKey("cname"))
 			spawned.setCustomName(saddleTag.getString("cname"));
-	}
-
-	@Override
-	public double getSpeedOfHorse(LivingEntity h) {
-		EntityHorse nmsHorse = ((CraftHorse) h).getHandle();
-		AttributeInstance speed = nmsHorse.getAttributeInstance(GenericAttributes.d);
-		double value = -1D;
-		value = speed.getValue();
-		return value;
 	}
 
 	@Override

@@ -37,17 +37,25 @@ public class PacketUtils {
 	 * @param name of the NMS class (in net.minecraft.server package ONLY, because it's NMS)
 	 * @return clazz the searched class
 	 */
+	public static Class<?> getNmsClass(String name){
+		return getNmsClass(name, null);
+	}
+	
+	/**
+	 * Get the Class in NMS, with a processing reducer
+	 * 
+	 * @param name of the NMS class (in net.minecraft.server package ONLY, because it's NMS)
+	 * @return clazz the searched class
+	 */
 	public static Class<?> getNmsClass(String name, String packagePrefix){
-		if(ALL_CLASS.containsKey(name))
-			return ALL_CLASS.get(name);
-		try {
-			Class<?> clazz = Class.forName(NMS_PREFIX + (Version.getVersion().isNewerOrEquals(Version.V1_17_R1) ? packagePrefix : "") + name);
-			ALL_CLASS.put(name, clazz);
-			return clazz;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+		return ALL_CLASS.computeIfAbsent(name, (a) -> {
+			try {
+				return Class.forName(NMS_PREFIX + (Version.getVersion().isNewerOrEquals(Version.V1_17_R1) ? packagePrefix : "") + name);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		});
 	}
 	
 	/**

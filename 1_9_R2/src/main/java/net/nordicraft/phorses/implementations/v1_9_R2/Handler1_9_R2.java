@@ -14,12 +14,10 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import net.minecraft.server.v1_9_R2.AttributeInstance;
 import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityHorse;
 import net.minecraft.server.v1_9_R2.EntityInsentient;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.MathHelper;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.World;
@@ -92,15 +90,6 @@ public class Handler1_9_R2 extends NMSHandler {
         spawned.setCustomNameVisible(saddleTag.getBoolean("iscnameviz"));
         if(saddleTag.hasKey("cname"))
             spawned.setCustomName(saddleTag.getString("cname"));
-    }
-
-    @Override
-    public double getSpeedOfHorse(LivingEntity h){
-        EntityHorse nmsHorse = ((CraftHorse)h).getHandle();
-        AttributeInstance speed = nmsHorse.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
-        double value = -1D;
-        value = speed.getValue();
-        return value;
     }
 
     @Override
