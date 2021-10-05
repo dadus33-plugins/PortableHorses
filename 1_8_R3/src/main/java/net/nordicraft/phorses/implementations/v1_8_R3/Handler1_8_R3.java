@@ -1,43 +1,15 @@
 package net.nordicraft.phorses.implementations.v1_8_R3;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
-
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHorse;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityHorse;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.World;
 import net.nordicraft.phorses.api.NMSHandler;
 
-@SuppressWarnings("unchecked")
 public class Handler1_8_R3 extends NMSHandler {
-
-	private MethodHandle onEntityAdded;
-
-	public Handler1_8_R3(Plugin instance) {
-		try {
-			Method onEntityAdded = World.class.getDeclaredMethod("a", Entity.class);
-
-			onEntityAdded.setAccessible(true);
-
-			this.onEntityAdded = MethodHandles.lookup().unreflect(onEntityAdded);
-		} catch (IllegalAccessException | NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
@@ -89,29 +61,5 @@ public class Handler1_8_R3 extends NMSHandler {
 		nmsSaddle.setTag(toSet);
 		return CraftItemStack.asCraftMirror(nmsSaddle);
 
-	}
-
-	@Override
-	public LivingEntity forceSpawn(EntityType type, Location spawnLocation) {
-		Class<? extends LivingEntity> entityClass = (Class<? extends LivingEntity>) type.getEntityClass();
-		Entity nmsEntity = ((CraftWorld) spawnLocation.getWorld()).createEntity(spawnLocation, entityClass);
-		try {
-			loadEntity(nmsEntity, (CraftWorld) spawnLocation.getWorld());
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-		}
-
-		return (LivingEntity) nmsEntity.getBukkitEntity();
-	}
-
-	private void loadEntity(Entity entity, CraftWorld craftWorld) throws Throwable {
-		World world = craftWorld.getHandle();
-		((EntityInsentient) entity).prepare(world.E(new BlockPosition(entity)), null);
-
-		int i = MathHelper.floor(entity.locX / 16.0D);
-		int j = MathHelper.floor(entity.locZ / 16.0D);
-		world.getChunkAt(i, j).a(entity);
-		world.entityList.add(entity);
-		onEntityAdded.invoke(world, entity);
 	}
 }

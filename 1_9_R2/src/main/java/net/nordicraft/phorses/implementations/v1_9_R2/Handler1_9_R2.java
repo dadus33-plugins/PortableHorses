@@ -4,19 +4,12 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftHorse;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import net.minecraft.server.v1_9_R2.EntityHorse;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.nordicraft.phorses.api.NMSHandler;
 
 public class Handler1_9_R2 extends NMSHandler {
-
-
-    public Handler1_9_R2(Plugin instance){
-    }
-
-
 
     @Override
     public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {

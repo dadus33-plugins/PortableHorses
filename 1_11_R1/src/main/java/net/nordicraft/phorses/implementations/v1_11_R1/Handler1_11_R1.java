@@ -14,7 +14,6 @@ import org.bukkit.entity.Mule;
 import org.bukkit.entity.SkeletonHorse;
 import org.bukkit.entity.ZombieHorse;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import net.minecraft.server.v1_11_R1.EntityHorse;
 import net.minecraft.server.v1_11_R1.EntityHorseDonkey;
@@ -25,12 +24,6 @@ import net.minecraft.server.v1_11_R1.NBTTagCompound;
 import net.nordicraft.phorses.api.NMSHandler;
 
 public class Handler1_11_R1 extends NMSHandler {
-
-	Plugin instance;
-
-	public Handler1_11_R1(Plugin instance) {
-		this.instance = instance;
-	}
 
 	@Override
 	public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {

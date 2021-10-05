@@ -1,9 +1,5 @@
 package net.nordicraft.phorses.implementations.v1_8_R2;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
-
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftHorse;
@@ -11,34 +7,13 @@ import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
-import net.minecraft.server.v1_8_R2.BlockPosition;
-import net.minecraft.server.v1_8_R2.Entity;
 import net.minecraft.server.v1_8_R2.EntityHorse;
-import net.minecraft.server.v1_8_R2.EntityInsentient;
 import net.minecraft.server.v1_8_R2.EntityLiving;
-import net.minecraft.server.v1_8_R2.MathHelper;
 import net.minecraft.server.v1_8_R2.NBTTagCompound;
-import net.minecraft.server.v1_8_R2.World;
 import net.nordicraft.phorses.api.NMSHandler;
 
 public class Handler1_8_R2 extends NMSHandler {
-
-	private MethodHandle onEntityAdded;
-
-	public Handler1_8_R2(Plugin instance) {
-
-		try {
-			Method onEntityAdded = World.class.getDeclaredMethod("a", Entity.class);
-
-			onEntityAdded.setAccessible(true);
-
-			this.onEntityAdded = MethodHandles.lookup().unreflect(onEntityAdded);
-		} catch (IllegalAccessException | NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
@@ -94,39 +69,16 @@ public class Handler1_8_R2 extends NMSHandler {
 		toSet.setBoolean("spsaddle", true);
 		nmsSaddle.setTag(toSet);
 		return CraftItemStack.asCraftMirror(nmsSaddle);
-
 	}
-
+	
 	@Override
-	public LivingEntity forceSpawn(EntityType type, Location spawnLocation) {
-		EntityLiving nmsEntity = createEntity(spawnLocation);
-		try {
-			loadEntity(nmsEntity, (CraftWorld) spawnLocation.getWorld());
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-		}
-
-		return (LivingEntity) nmsEntity.getBukkitEntity();
-	}
-
-	private void loadEntity(Entity entity, CraftWorld craftWorld) throws Throwable {
-		World world = craftWorld.getHandle();
-		((EntityInsentient) entity).prepare(world.E(new BlockPosition(entity)), null);
-
-		int i = MathHelper.floor(entity.locX / 16.0D);
-		int j = MathHelper.floor(entity.locZ / 16.0D);
-		world.getChunkAt(i, j).a(entity);
-		world.entityList.add(entity);
-		onEntityAdded.invoke(world, entity);
-	}
-
-	private EntityLiving createEntity(Location location) {
-		EntityLiving entity = new EntityHorse(((CraftWorld) location.getWorld()).getHandle());
-		double x = location.getX();
-		double y = location.getY();
-		double z = location.getZ();
-		float pitch = location.getPitch();
-		float yaw = location.getYaw();
+	public Object createEntity(EntityType type, Location loc) throws Exception {
+		EntityLiving entity = new EntityHorse(((CraftWorld) loc.getWorld()).getHandle());
+		double x = loc.getX();
+		double y = loc.getY();
+		double z = loc.getZ();
+		float pitch = loc.getPitch();
+		float yaw = loc.getYaw();
 		entity.setLocation(x, y, z, yaw, pitch);
 		return entity;
 	}
