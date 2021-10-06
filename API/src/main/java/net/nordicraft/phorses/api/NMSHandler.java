@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -68,7 +67,9 @@ public abstract class NMSHandler {
 			
 			// load fields
 			this.entityLocX = entityClass.getDeclaredField("locX");
+			this.entityLocX.setAccessible(true);
 			this.entityLocZ = entityClass.getDeclaredField("locZ");
+			this.entityLocZ.setAccessible(true);
 			if(!ver.isNewerOrEquals(Version.V1_14_R1))
 				this.entityListField = worldClass.getDeclaredField("entityList");
 		} catch (Exception e) {
@@ -148,7 +149,6 @@ public abstract class NMSHandler {
 	    	
 	        int i = Maths.floor(entityLocX.getDouble(entity) / 16.0D);
 	        int j = Maths.floor(entityLocZ.getDouble(entity) / 16.0D);
-        	Bukkit.broadcastMessage("Adding");
 	        
 	        Object nmsChunk = getChunkAt.invoke(worldServer, i, j);
 	        nmsChunk.getClass().getDeclaredMethod("a", PacketUtils.getNmsClass("Entity")).invoke(nmsChunk, entity);

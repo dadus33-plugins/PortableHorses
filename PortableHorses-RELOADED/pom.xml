@@ -129,6 +129,13 @@
         </dependency>
         <dependency>
             <groupId>net.nordicraft.phorses</groupId>
+            <artifactId>1_15_R1</artifactId>
+            <version>FINAL</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>net.nordicraft.phorses</groupId>
             <artifactId>API</artifactId>
             <version>FINAL</version>
             <scope>compile</scope>

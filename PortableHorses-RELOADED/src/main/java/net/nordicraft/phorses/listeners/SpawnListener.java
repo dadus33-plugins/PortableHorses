@@ -163,11 +163,10 @@ public class SpawnListener implements Listener {
                 h.setPassenger(e.getPlayer());
             }
         }else{
-            AbstractHorse h;
-            if(p.hasPermission("portablehorses.use.ignore-protections")){
+            AbstractHorse h = (AbstractHorse) handler.forceSpawn(handler.getEntityType(saddle), spawn);// spawn.getWorld().spawnEntity(spawn, handler.getEntityType(saddle));
+
+            if((h == null || !h.isValid()) && p.hasPermission("portablehorses.use.ignore-protections")){ // if failed to spawn and we can bypass
                 h = (AbstractHorse) handler.forceSpawn(handler.getEntityType(saddle), spawn);
-            }else{
-                h = (AbstractHorse) spawn.getWorld().spawnEntity(spawn, handler.getEntityType(saddle));
             }
 
             if (h == null || !h.isValid()) {
