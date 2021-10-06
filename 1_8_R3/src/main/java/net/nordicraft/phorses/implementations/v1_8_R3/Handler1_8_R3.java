@@ -12,31 +12,6 @@ import net.nordicraft.phorses.api.NMSHandler;
 public class Handler1_8_R3 extends NMSHandler {
 
 	@Override
-	public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
-		NBTTagCompound saddleTag;
-		net.minecraft.server.v1_8_R3.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-		saddleTag = nmsSaddle.hasTag() ? nmsSaddle.getTag() : new NBTTagCompound();
-		saddleTag.setBoolean("phorse", true);
-		NBTTagCompound horseTag = new NBTTagCompound();
-		EntityHorse nmsHorse = ((CraftHorse) horse).getHandle();
-		nmsHorse.b(horseTag);
-		if (horse.getHealth() <= 0.5D)
-			if (horseTag.getFloat("Health") <= 0.5F || horseTag.getFloat("HealF") <= 0.5F) {
-				horseTag.setFloat("Health", 1F);
-				if (horseTag.hasKey("HealF"))
-					horseTag.setFloat("HealF", 1F);
-			}
-		saddleTag.set("horsetag", horseTag);
-		saddleTag.setBoolean("phorse", true);
-		saddleTag.setBoolean("iscnameviz", horse.isCustomNameVisible());
-		if (horse.getCustomName() != null)
-			saddleTag.setString("cname", horse.getCustomName());
-		nmsSaddle.setTag(saddleTag);
-		saddle = CraftItemStack.asCraftMirror(nmsSaddle);
-		return saddle;
-	}
-
-	@Override
 	public void spawnFromSaddle(ItemStack saddle, LivingEntity h) {
 		final NBTTagCompound saddleTag = CraftItemStack.asNMSCopy(saddle).getTag();
 		final EntityHorse spawned = ((CraftHorse) h).getHandle();

@@ -22,7 +22,7 @@ public abstract class NMSHandler {
 	protected Object speedAttribute; // speed attribute from enum
 	protected Method addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity, worldCreateEntity, getChunkAt; // world method
 	protected Method getterAttribute, registerEntity, itemAsNMSCopy, itemAsCraftMirror; // item method
-	protected Method loadNbtData, nbtSetTag, nbtGetTag; // nbt method
+	protected Method saveNbtData, nbtSetTag, nbtGetTag; // nbt method
 	protected Field entityLocX, entityLocZ, entityListField, entityLoc, vecLocX, vecLocZ; // all field
 	
 	public NMSHandler() {
@@ -69,7 +69,7 @@ public abstract class NMSHandler {
 	    	this.itemAsNMSCopy = craftItemClass.getMethod("asNMSCopy", ItemStack.class);
 	        this.itemAsCraftMirror = craftItemClass.getMethod("asCraftMirror", itemStackClass);
 	        
-	    	this.loadNbtData = entityHorse.getDeclaredMethod(ver.isNewerOrEquals(Version.V1_16_R1) ? "saveData" : "b", nbtTagComp);
+	    	this.saveNbtData = entityHorse.getDeclaredMethod(ver.isNewerOrEquals(Version.V1_16_R1) ? "saveData" : "b", nbtTagComp);
 	    	this.nbtGetTag = itemStackClass.getMethod("getTag");
 	    	this.nbtSetTag = itemStackClass.getMethod("setTag", nbtTagComp);
 			
@@ -104,7 +104,7 @@ public abstract class NMSHandler {
 			Object nmsHorse = craftAbsHorse.getMethod("getHandle").invoke(craftAbsHorse.cast(horse));
 	        //EntityHorseAbstract nmsHorse = ((CraftAbstractHorse)horse).getHandle();
 	        NBT horseTag = new NBT(null);
-	        this.loadNbtData.invoke(nmsHorse, horseTag.getNmsNBT());
+	        this.saveNbtData.invoke(nmsHorse, horseTag.getNmsNBT());
 	        if(horse.getHealth() <= 0.5D) {
 	            if(horseTag.getFloat("Health") <= 0.5F || horseTag.getFloat("HealF") <= 0.5F){
 	                horseTag.setFloat("Health", 1F);
