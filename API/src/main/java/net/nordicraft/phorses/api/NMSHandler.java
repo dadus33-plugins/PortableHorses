@@ -45,9 +45,14 @@ public abstract class NMSHandler {
 			this.canAddEntityInWorld.setAccessible(true);
 			this.addEntityInWorld = worldClass.getDeclaredMethod("b", entityClass);
 			this.addEntityInWorld.setAccessible(true);
-			this.prepareWorld = PacketUtils.getNmsClass("EntityInsentient").getDeclaredMethod("prepare",
-					PacketUtils.getNmsClass("DifficultyDamageScaler"), PacketUtils.getNmsClass("GroupDataEntity"));
-			this.worldDamageScaler = worldClass.getDeclaredMethod(ver.isNewerOrEquals(Version.V1_9_R1) ? "D" : "E", blockPosClass);
+			if(ver.isNewerOrEquals(Version.V1_13_R1)) {
+				this.prepareWorld = PacketUtils.getNmsClass("EntityInsentient").getDeclaredMethod("prepare",
+						PacketUtils.getNmsClass("DifficultyDamageScaler"), PacketUtils.getNmsClass("GroupDataEntity"), PacketUtils.getNmsClass("NBTTagCompound"));
+			} else
+				this.prepareWorld = PacketUtils.getNmsClass("EntityInsentient").getDeclaredMethod("prepare",
+						PacketUtils.getNmsClass("DifficultyDamageScaler"), PacketUtils.getNmsClass("GroupDataEntity"));
+			String worldDamagerScalerName = ver.isNewerOrEquals(Version.V1_13_R1) ? "getDamageScaler" : (ver.isNewerOrEquals(Version.V1_9_R1) ? "D" : "E");
+			this.worldDamageScaler = worldClass.getDeclaredMethod(worldDamagerScalerName, blockPosClass);
 			this.getChunkAt = worldClass.getDeclaredMethod("getChunkAt", int.class, int.class);
 			this.getBukkitEntity = entityClass.getDeclaredMethod("getBukkitEntity");
 			for(Method method : craftWorldClass.getDeclaredMethods()) { // for all method in craftworld
@@ -129,7 +134,10 @@ public abstract class NMSHandler {
 	        Object entity = createEntity(type, spawnLocation);
 	    	Object worldServer = PacketUtils.getWorldServer(world);
 
-	    	prepareWorld.invoke(entity, worldDamageScaler.invoke(worldServer, blockPositionConstructor.newInstance(entity)), null);
+	    	if(Version.getVersion().isNewerOrEquals(Version.V1_13_R1))
+		    	prepareWorld.invoke(entity, worldDamageScaler.invoke(worldServer, blockPositionConstructor.newInstance(entity)), null, null);
+	    	else
+	    		prepareWorld.invoke(entity, worldDamageScaler.invoke(worldServer, blockPositionConstructor.newInstance(entity)), null);
 	        if((boolean)canAddEntityInWorld.invoke(worldServer, entity)){
 		        int i = Maths.floor(entityLocX.getDouble(entity) / 16.0D);
 		        int j = Maths.floor(entityLocZ.getDouble(entity) / 16.0D);
