@@ -1,6 +1,5 @@
 package net.nordicraft.phorses.implementations.v1_15_R1;
 
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftAbstractHorse;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
@@ -9,43 +8,10 @@ import org.bukkit.inventory.ItemStack;
 
 import net.minecraft.server.v1_15_R1.ChatMessage;
 import net.minecraft.server.v1_15_R1.Entity;
-import net.minecraft.server.v1_15_R1.EntityHorseAbstract;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.nordicraft.phorses.api.NMSHandler;
 
 public class Handler1_15_R1 extends NMSHandler {
-		
-    @Override
-    public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
-        NBTTagCompound saddleTag;
-        net.minecraft.server.v1_15_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
-        saddleTag = nmsSaddle.getTag();
-        if(saddleTag!=null){
-            saddleTag.setBoolean("phorse", true);
-        }else{
-            saddleTag = new NBTTagCompound();
-            saddleTag.setBoolean("phorse", true);
-        }
-        saddleTag.setString("entype", horse.getType().name());
-        EntityHorseAbstract nmsHorse = ((CraftAbstractHorse)horse).getHandle();
-        NBTTagCompound horseTag = new NBTTagCompound();
-        nmsHorse.b(horseTag);
-        if(horse.getHealth() <= 0.5D) {
-            if(horseTag.getFloat("Health")<=0.5F || horseTag.getFloat("HealF")<=0.5F){
-                horseTag.setFloat("Health", 1F);
-                if(horseTag.hasKey("HealF"))
-                    horseTag.setFloat("HealF", 1F);
-            }
-        }
-        saddleTag.set("horsetag", horseTag);
-        saddleTag.setBoolean("phorse", true);
-        saddleTag.setBoolean("iscnameviz", horse.isCustomNameVisible());
-        if(horse.getCustomName()!=null)
-            saddleTag.setString("cname", horse.getCustomName());
-        nmsSaddle.setTag(saddleTag);
-        return CraftItemStack.asCraftMirror(nmsSaddle);
-    }
-
 
     @Override
     public void spawnFromSaddle(ItemStack saddle, LivingEntity h) {

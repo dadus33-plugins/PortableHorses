@@ -19,10 +19,11 @@ import net.nordicraft.phorses.utils.Version;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class NMSHandler {
 
-	protected Object speedAttribute;
-	protected Method getterAttribute, addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity,
-			worldCreateEntity, getChunkAt, registerEntity;
-	protected Field entityLocX, entityLocZ, entityListField, entityLoc, vecLocX, vecLocZ;
+	protected Object speedAttribute; // speed attribute from enum
+	protected Method addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity, worldCreateEntity, getChunkAt; // world method
+	protected Method getterAttribute, registerEntity, itemAsNMSCopy, itemAsCraftMirror; // item method
+	protected Method loadNbtData, nbtSetTag, nbtGetTag; // nbt method
+	protected Field entityLocX, entityLocZ, entityListField, entityLoc, vecLocX, vecLocZ; // all field
 	
 	public NMSHandler() {
 		try {
@@ -35,6 +36,11 @@ public abstract class NMSHandler {
 			Class<?> attributesClass = PacketUtils.getNmsClass("GenericAttributes");
 			Class<?> blockPosClass = PacketUtils.getNmsClass("BlockPosition");
 	        Class<?> craftWorldClass = PacketUtils.getObcClass("CraftWorld");
+	        Class<?> itemStackClass = PacketUtils.getNmsClass("ItemStack");
+	    	Class<?> craftItemClass = PacketUtils.getObcClass("inventory.CraftItemStack");
+	    	Class<?> entityHorse = PacketUtils.getNmsClass("EntityHorseAbstract");
+	    	Class<?> nbtTagComp = PacketUtils.getNmsClass("NBTTagCompound");
+	    	
 			// get objects
 			this.speedAttribute = attributesClass.getDeclaredField(ver.isNewerOrEquals(Version.V1_8_R3) ? "MOVEMENT_SPEED" : "d").get(attributesClass);
 			// load method
@@ -59,6 +65,13 @@ public abstract class NMSHandler {
 			        break;
 				}
 			}
+	    	
+	    	this.itemAsNMSCopy = craftItemClass.getMethod("asNMSCopy", ItemStack.class);
+	        this.itemAsCraftMirror = craftItemClass.getMethod("asCraftMirror", itemStackClass);
+	        
+	    	this.loadNbtData = entityHorse.getDeclaredMethod(ver.isNewerOrEquals(Version.V1_16_R1) ? "saveData" : "b", nbtTagComp);
+	    	this.nbtGetTag = itemStackClass.getMethod("getTag");
+	    	this.nbtSetTag = itemStackClass.getMethod("setTag", nbtTagComp);
 			
 			// load fields
 			if(ver.isNewerOrEquals(Version.V1_16_R1)) {
@@ -80,7 +93,36 @@ public abstract class NMSHandler {
 		}
 	}
 	
-	public abstract ItemStack transferTag(LivingEntity horse, ItemStack saddle);
+	public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
+		try {
+	    	Class<?> craftAbsHorse = PacketUtils.getObcClass("entity.CraftAbstractHorse");
+	    	
+	        NBT nbt = new NBT(getItemTag(saddle));
+        	nbt.setBoolean("phorse", true);
+        	nbt.setString("entype", horse.getType().name());
+
+			Object nmsHorse = craftAbsHorse.getMethod("getHandle").invoke(craftAbsHorse.cast(horse));
+	        //EntityHorseAbstract nmsHorse = ((CraftAbstractHorse)horse).getHandle();
+	        NBT horseTag = new NBT(null);
+	        this.loadNbtData.invoke(nmsHorse, horseTag.getNmsNBT());
+	        if(horse.getHealth() <= 0.5D) {
+	            if(horseTag.getFloat("Health") <= 0.5F || horseTag.getFloat("HealF") <= 0.5F){
+	                horseTag.setFloat("Health", 1F);
+	                if(horseTag.hasKey("HealF"))
+	                    horseTag.setFloat("HealF", 1F);
+	            }
+	        }
+	        nbt.setTag("horsetag", horseTag);
+	        nbt.setBoolean("phorse", true);
+	        nbt.setBoolean("iscnameviz", horse.isCustomNameVisible());
+	        if(horse.getCustomName() != null)
+	        	nbt.setString("cname", horse.getCustomName());
+	        return (ItemStack) this.itemAsCraftMirror.invoke(null, setItemTag(saddle, nbt));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public abstract void spawnFromSaddle(ItemStack saddle, LivingEntity h);
 
@@ -113,9 +155,18 @@ public abstract class NMSHandler {
      */
     protected Object getItemTag(ItemStack item) {
     	try {
-	    	Class<?> craftItemClass = PacketUtils.getObcClass("inventory.CraftItemStack");
-	    	Object nmsSaddle = craftItemClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
-	    	return nmsSaddle.getClass().getMethod("getTag").invoke(nmsSaddle);
+	    	return this.nbtGetTag.invoke(this.itemAsNMSCopy.invoke(null, item));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+		}
+    }
+    
+    protected Object setItemTag(ItemStack item, NBT tag) {
+    	try {
+    		Object nmsItem = this.itemAsNMSCopy.invoke(null, item);
+	    	this.nbtSetTag.invoke(nmsItem, tag.getNmsNBT());
+	    	return nmsItem;
     	} catch (Exception e) {
     		e.printStackTrace();
     		return null;
