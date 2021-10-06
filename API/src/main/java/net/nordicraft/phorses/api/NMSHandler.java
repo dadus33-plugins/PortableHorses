@@ -1,6 +1,5 @@
 package net.nordicraft.phorses.api;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -23,8 +22,7 @@ public abstract class NMSHandler {
 	protected Object speedAttribute;
 	protected Method getterAttribute, addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity,
 			worldCreateEntity, getChunkAt, registerEntity;
-	protected Constructor<?> blockPositionConstructor;
-	protected Field entityLocX, entityLocZ, entityListField;
+	protected Field entityLocX, entityLocZ, entityListField, entityLoc, vecLocX, vecLocZ;
 	
 	public NMSHandler() {
 		try {
@@ -40,7 +38,7 @@ public abstract class NMSHandler {
 			// get objects
 			this.speedAttribute = attributesClass.getDeclaredField(ver.isNewerOrEquals(Version.V1_8_R3) ? "MOVEMENT_SPEED" : "d").get(attributesClass);
 			// load method
-			this.getterAttribute = entityLivingClass.getDeclaredMethod("getAttributeInstance", PacketUtils.getNmsClass("IAttribute"));
+			this.getterAttribute = entityLivingClass.getDeclaredMethod("getAttributeInstance", PacketUtils.getNmsClass(ver.isNewerOrEquals(Version.V1_16_R1) ? "AttributeBase" : "IAttribute"));
 			if(ver.isNewerOrEquals(Version.V1_14_R1))
 				this.addEntityInWorld = PacketUtils.getNmsClass("IWorldWriter").getDeclaredMethod("addEntity", entityClass);
 			else
@@ -62,14 +60,19 @@ public abstract class NMSHandler {
 				}
 			}
 			
-			// load constructors
-			this.blockPositionConstructor = blockPosClass.getDeclaredConstructor(entityClass);
-			
 			// load fields
-			this.entityLocX = entityClass.getDeclaredField("locX");
-			this.entityLocX.setAccessible(true);
-			this.entityLocZ = entityClass.getDeclaredField("locZ");
-			this.entityLocZ.setAccessible(true);
+			if(ver.isNewerOrEquals(Version.V1_16_R1)) {
+				this.entityLoc = entityClass.getDeclaredField("loc");
+				this.entityLoc.setAccessible(true);
+				Class<?> vec3dClass = PacketUtils.getNmsClass("Vec3D");
+				this.vecLocX = vec3dClass.getDeclaredField("x");
+				this.vecLocZ = vec3dClass.getDeclaredField("z");
+			} else {
+				this.entityLocX = entityClass.getDeclaredField("locX");
+				this.entityLocX.setAccessible(true);
+				this.entityLocZ = entityClass.getDeclaredField("locZ");
+				this.entityLocZ.setAccessible(true);
+			}
 			if(!ver.isNewerOrEquals(Version.V1_14_R1))
 				this.entityListField = worldClass.getDeclaredField("entityList");
 		} catch (Exception e) {
@@ -147,8 +150,8 @@ public abstract class NMSHandler {
 	    	else if(prepareWorldCountParam == 4)
 	    		prepareWorld.invoke(entity, null, null, null, null);
 	    	
-	        int i = Maths.floor(entityLocX.getDouble(entity) / 16.0D);
-	        int j = Maths.floor(entityLocZ.getDouble(entity) / 16.0D);
+	        int i = Maths.floor(getLocX(entity) / 16.0D);
+	        int j = Maths.floor(getLocZ(entity) / 16.0D);
 	        
 	        Object nmsChunk = getChunkAt.invoke(worldServer, i, j);
 	        nmsChunk.getClass().getDeclaredMethod("a", PacketUtils.getNmsClass("Entity")).invoke(nmsChunk, entity);
@@ -177,5 +180,19 @@ public abstract class NMSHandler {
         Class<? extends Entity> entityClass = (Class<? extends Entity>)type.getEntityClass();
         World world = loc.getWorld();
 		return worldCreateEntity.invoke(world, loc, entityClass);
+	}
+	
+	private double getLocX(Object entity) throws Exception {
+		if(entityLocX == null) {
+			return vecLocX.getDouble(entityLoc.get(entity));
+		} else
+			return entityLocX.getDouble(entity);
+	}
+	
+	private double getLocZ(Object entity) throws Exception {
+		if(entityLocZ == null) {
+			return vecLocZ.getDouble(entityLoc.get(entity));
+		} else
+			return entityLocZ.getDouble(entity);
 	}
 }

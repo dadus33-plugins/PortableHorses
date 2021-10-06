@@ -20,9 +20,9 @@ public enum Version {
 	V1_13_R2("1.13.2", 132, "v1_13_R2.Handler1_13_R2"),
 	V1_14_R1("1.14", 141, "v1_14_R1.Handler1_14_R1"),
 	V1_15_R1("1.15", 151, "v1_15_R1.Handler1_15_R1"),
-	V1_16_R1("1.16.1", 161, null),
-	V1_16_R2("1.16.2", 161, null),
-	V1_16_R3("1.16.4", 161, null),
+	V1_16_R1("1.16.1", 161, "v1_16_R1.Handler1_16_R1"),
+	V1_16_R2("1.16.2", 162, "v1_16_R2.Handler1_16_R2"),
+	V1_16_R3("1.16.4", 163, "v1_16_R3.Handler1_16_R3"),
 	V1_17_R1("1.17", 171, null),
 	HIGHER("higher", Integer.MAX_VALUE, null);
 
