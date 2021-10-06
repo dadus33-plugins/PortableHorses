@@ -1,12 +1,12 @@
-package net.nordicraft.phorses.implementations.v1_13_R2;
+package net.nordicraft.phorses.implementations.v1_14_R1;
 
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftDonkey;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftHorse;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftMule;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftSkeletonHorse;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftZombieHorse;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftDonkey;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftHorse;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftMule;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftSkeletonHorse;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftZombieHorse;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Donkey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
@@ -16,22 +16,22 @@ import org.bukkit.entity.SkeletonHorse;
 import org.bukkit.entity.ZombieHorse;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_13_R2.ChatMessage;
-import net.minecraft.server.v1_13_R2.Entity;
-import net.minecraft.server.v1_13_R2.EntityHorse;
-import net.minecraft.server.v1_13_R2.EntityHorseDonkey;
-import net.minecraft.server.v1_13_R2.EntityHorseMule;
-import net.minecraft.server.v1_13_R2.EntityHorseSkeleton;
-import net.minecraft.server.v1_13_R2.EntityHorseZombie;
-import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_14_R1.ChatMessage;
+import net.minecraft.server.v1_14_R1.Entity;
+import net.minecraft.server.v1_14_R1.EntityHorse;
+import net.minecraft.server.v1_14_R1.EntityHorseDonkey;
+import net.minecraft.server.v1_14_R1.EntityHorseMule;
+import net.minecraft.server.v1_14_R1.EntityHorseSkeleton;
+import net.minecraft.server.v1_14_R1.EntityHorseZombie;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
 import net.nordicraft.phorses.api.NMSHandler;
 
-public class Handler1_13_R2 extends NMSHandler {
+public class Handler1_14_R1 extends NMSHandler {
 		
     @Override
     public ItemStack transferTag(LivingEntity horse, ItemStack saddle) {
         NBTTagCompound saddleTag;
-        net.minecraft.server.v1_13_R2.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
+        net.minecraft.server.v1_14_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
         saddleTag = nmsSaddle.getTag();
         if(saddleTag!=null){
             saddleTag.setBoolean("phorse", true);
@@ -153,7 +153,7 @@ public class Handler1_13_R2 extends NMSHandler {
 
     @Override
     public ItemStack setSpecialSaddle(ItemStack saddle){
-        net.minecraft.server.v1_13_R2.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
+        net.minecraft.server.v1_14_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
         ItemStack returnItem;
         if(nmsSaddle.hasTag()){
             nmsSaddle.getTag().setBoolean("spsaddle", true);
@@ -169,7 +169,7 @@ public class Handler1_13_R2 extends NMSHandler {
 
     @Override
     public EntityType getEntityType(ItemStack saddle){
-        net.minecraft.server.v1_13_R2.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
+        net.minecraft.server.v1_14_R1.ItemStack nmsSaddle = CraftItemStack.asNMSCopy(saddle);
         EntityType t = EntityType.valueOf(nmsSaddle.getTag().getString("entype"));
         if(t==null){
             NBTTagCompound tag = nmsSaddle.getTag();

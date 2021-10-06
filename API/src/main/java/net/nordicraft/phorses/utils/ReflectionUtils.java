@@ -1,6 +1,7 @@
 package net.nordicraft.phorses.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class ReflectionUtils {
 	
@@ -72,6 +73,13 @@ public class ReflectionUtils {
 				return (T) f.get(from);
 			}
 		}
+		return null;
+	}
+	
+	public static Method getMethodWithName(Class<?> clazz, String method) throws Exception {
+		for(Method m : clazz.getDeclaredMethods())
+			if(m.getName().equalsIgnoreCase(method))
+				return m;
 		return null;
 	}
 }

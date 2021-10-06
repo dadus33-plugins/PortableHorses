@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -21,8 +22,8 @@ import net.nordicraft.phorses.utils.Version;
 public abstract class NMSHandler {
 
 	protected Object speedAttribute;
-	protected Method getterAttribute, canAddEntityInWorld, addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity,
-			worldCreateEntity, getChunkAt;
+	protected Method getterAttribute, addEntityInWorld, prepareWorld, worldDamageScaler, getBukkitEntity,
+			worldCreateEntity, getChunkAt, registerEntity;
 	protected Constructor<?> blockPositionConstructor;
 	protected Field entityLocX, entityLocZ, entityListField;
 	
@@ -41,16 +42,16 @@ public abstract class NMSHandler {
 			this.speedAttribute = attributesClass.getDeclaredField(ver.isNewerOrEquals(Version.V1_8_R3) ? "MOVEMENT_SPEED" : "d").get(attributesClass);
 			// load method
 			this.getterAttribute = entityLivingClass.getDeclaredMethod("getAttributeInstance", PacketUtils.getNmsClass("IAttribute"));
-			this.canAddEntityInWorld = worldServerClass.getDeclaredMethod(ver.isNewerOrEquals(Version.V1_11_R1) ? "j" : "i", entityClass);
-			this.canAddEntityInWorld.setAccessible(true);
-			this.addEntityInWorld = worldClass.getDeclaredMethod("b", entityClass);
+			if(ver.isNewerOrEquals(Version.V1_14_R1))
+				this.addEntityInWorld = PacketUtils.getNmsClass("IWorldWriter").getDeclaredMethod("addEntity", entityClass);
+			else
+				this.addEntityInWorld = worldClass.getDeclaredMethod("b", entityClass);
 			this.addEntityInWorld.setAccessible(true);
-			if(ver.isNewerOrEquals(Version.V1_13_R1)) {
-				this.prepareWorld = PacketUtils.getNmsClass("EntityInsentient").getDeclaredMethod("prepare",
-						PacketUtils.getNmsClass("DifficultyDamageScaler"), PacketUtils.getNmsClass("GroupDataEntity"), PacketUtils.getNmsClass("NBTTagCompound"));
-			} else
-				this.prepareWorld = PacketUtils.getNmsClass("EntityInsentient").getDeclaredMethod("prepare",
-						PacketUtils.getNmsClass("DifficultyDamageScaler"), PacketUtils.getNmsClass("GroupDataEntity"));
+			if(ver.isNewerOrEquals(Version.V1_14_R1)) {
+				this.registerEntity = worldServerClass.getDeclaredMethod("registerEntity", entityClass);
+				this.registerEntity.setAccessible(true);
+			}
+			this.prepareWorld = ReflectionUtils.getMethodWithName(PacketUtils.getNmsClass("EntityInsentient"), "prepare");
 			String worldDamagerScalerName = ver.isNewerOrEquals(Version.V1_13_R1) ? "getDamageScaler" : (ver.isNewerOrEquals(Version.V1_9_R1) ? "D" : "E");
 			this.worldDamageScaler = worldClass.getDeclaredMethod(worldDamagerScalerName, blockPosClass);
 			this.getChunkAt = worldClass.getDeclaredMethod("getChunkAt", int.class, int.class);
@@ -68,7 +69,8 @@ public abstract class NMSHandler {
 			// load fields
 			this.entityLocX = entityClass.getDeclaredField("locX");
 			this.entityLocZ = entityClass.getDeclaredField("locZ");
-			this.entityListField = PacketUtils.getNmsClass("World").getDeclaredField("entityList");
+			if(!ver.isNewerOrEquals(Version.V1_14_R1))
+				this.entityListField = worldClass.getDeclaredField("entityList");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -134,19 +136,27 @@ public abstract class NMSHandler {
 	        Object entity = createEntity(type, spawnLocation);
 	    	Object worldServer = PacketUtils.getWorldServer(world);
 
-	    	if(Version.getVersion().isNewerOrEquals(Version.V1_13_R1))
-		    	prepareWorld.invoke(entity, worldDamageScaler.invoke(worldServer, blockPositionConstructor.newInstance(entity)), null, null);
-	    	else
-	    		prepareWorld.invoke(entity, worldDamageScaler.invoke(worldServer, blockPositionConstructor.newInstance(entity)), null);
-	        if((boolean)canAddEntityInWorld.invoke(worldServer, entity)){
-		        int i = Maths.floor(entityLocX.getDouble(entity) / 16.0D);
-		        int j = Maths.floor(entityLocZ.getDouble(entity) / 16.0D);
-		        
-		        Object nmsChunk = getChunkAt.invoke(worldServer, i, j);
-		        nmsChunk.getClass().getDeclaredMethod("a", PacketUtils.getNmsClass("Entity")).invoke(nmsChunk, entity);
-		        ((List) entityListField.get(worldServer)).add(entity);
-		        addEntityInWorld.invoke(worldServer, entity);
-	        }
+	    	int prepareWorldCountParam = prepareWorld.getParameterCount();
+	    	if(prepareWorldCountParam == 1)
+	    		prepareWorld.invoke(entity, (Object) null);
+	    	else if(prepareWorldCountParam == 2)
+	    		prepareWorld.invoke(entity, null, null);
+	    	else if(prepareWorldCountParam == 3)
+	    		prepareWorld.invoke(entity, null, null, null);
+	    	else if(prepareWorldCountParam == 4)
+	    		prepareWorld.invoke(entity, null, null, null, null);
+	    	
+	        int i = Maths.floor(entityLocX.getDouble(entity) / 16.0D);
+	        int j = Maths.floor(entityLocZ.getDouble(entity) / 16.0D);
+        	Bukkit.broadcastMessage("Adding");
+	        
+	        Object nmsChunk = getChunkAt.invoke(worldServer, i, j);
+	        nmsChunk.getClass().getDeclaredMethod("a", PacketUtils.getNmsClass("Entity")).invoke(nmsChunk, entity);
+	        if(entityListField != null)
+	        	((List) entityListField.get(worldServer)).add(entity);
+	        if(registerEntity != null)
+	        	registerEntity.invoke(worldServer, entity);
+	        addEntityInWorld.invoke(worldServer, entity);
 	        
 	        return (LivingEntity) getBukkitEntity.invoke(entity);
 	    } catch (Exception e) {
