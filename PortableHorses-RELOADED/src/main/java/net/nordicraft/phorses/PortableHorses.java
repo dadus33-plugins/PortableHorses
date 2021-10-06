@@ -1,8 +1,8 @@
 package net.nordicraft.phorses;
 
-import java.util.logging.Level;
+import java.util.Arrays;
+import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -35,245 +35,171 @@ import net.nordicraft.phorses.utils.Version;
 
 @SuppressWarnings("deprecation")
 public class PortableHorses extends JavaPlugin {
-	
-    private NMSHandler nmsHandler;
-    private Storage storage;
-    private CustomConfig handler;
-    private Config config;
-    private static Plugin instance;
-    private Listener chosenListener;
-    private Listener spawnListener;
-    private Listener playerDeathListener;
-    private ItemUpdatePacketListener itemUpdatePacketListener;
-    private Styler styler;
-    private PHCommand phcommand;
-    private static ItemStack specialSaddle = null;
 
-    public void onEnable(){
-        instance = this;
-        Version version = Version.getVersion();
-		if(version.isSupported())
-			PortableHorses.instance().getLogger().info("Loading support for " + version.name());
-		else
-			PortableHorses.instance().getLogger().info("Version " + version.name() + " isn't supported yet.");
+	private NMSHandler nmsHandler;
+	private Storage storage;
+	private CustomConfig handler;
+	private Config config;
+	private static Plugin instance;
+	private Listener chosenListener;
+	private Listener playerDeathListener;
+	private ItemUpdatePacketListener itemUpdatePacketListener;
+	private Styler styler;
+	private PHCommand phcommand;
+	private static ItemStack specialSaddle = null;
+
+	@Override
+	public void onEnable() {
+		instance = this;
+		Version version = Version.getVersion();
+		PortableHorses.instance().getLogger().info(version.isSupported() ? "Loading support for " + version.name()
+				: "Version " + version.name() + " isn't supported yet.");
 		try {
-			nmsHandler = (NMSHandler) Class.forName("net.nordicraft.phorses.implementations." + version.getHandlerName())
-					.getConstructor().newInstance();
+			nmsHandler = (NMSHandler) Class
+					.forName("net.nordicraft.phorses.implementations." + version.getHandlerName()).getConstructor()
+					.newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-        handler = new CustomConfig(this);
-        config = new Config("config");
-        if (config.file == null || config.fileConfig == null){
-            handler.saveDefaultConfig(config);
-        }
-        storage = new Storage(config, handler);
-        styler = new Styler(storage, this);
-        if(storage.MODE.equalsIgnoreCase("TAKEOFF")){
-            chosenListener = new TakeOffListener(nmsHandler, storage, styler);
-        }else{
-            chosenListener = new RightClickListener(nmsHandler, storage, styler);
-        }
 
-        getServer().getPluginManager().registerEvents(chosenListener, this);
-        spawnListener = new SpawnListener(nmsHandler, storage, styler);
-        getServer().getPluginManager().registerEvents(spawnListener, this);
+		handler = new CustomConfig(this);
+		config = new Config("config");
+		if (config.file == null || config.fileConfig == null) {
+			handler.saveDefaultConfig(config);
+		}
+		storage = new Storage(config, handler);
+		styler = new Styler(storage, this);
+		if (storage.MODE.equalsIgnoreCase("TAKEOFF")) {
+			chosenListener = new TakeOffListener(nmsHandler, storage, styler);
+		} else {
+			chosenListener = new RightClickListener(nmsHandler, storage, styler);
+		}
 
-        if(storage.USE_SPECIAL_SADDLE && storage.SPECIAL_CRAFTABLE){
-            Recipe recipe;
-            ItemStack result = new ItemStack(Material.SADDLE);
-            result = nmsHandler.setSpecialSaddle(result);
-            ItemMeta resultMeta = result.getItemMeta();
-            resultMeta.setDisplayName(storage.SPECIAL_NAME);
-            resultMeta.setLore(storage.SPECIAL_LORE);
-            if(storage.SPECIAL_ENCHANTED){
-                resultMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-                resultMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
-            result.setItemMeta(resultMeta);
-            if(storage.SPECIAL_RECEIPE_IGNORE_ORDER){
-                ShapelessRecipe sr = new ShapelessRecipe(result);
-                if(storage.SPECIAL_RECEIPE_SLOT1 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT1);
-                if(storage.SPECIAL_RECEIPE_SLOT2 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT2);
-                if(storage.SPECIAL_RECEIPE_SLOT3 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT3);
-                if(storage.SPECIAL_RECEIPE_SLOT4 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT4);
-                if(storage.SPECIAL_RECEIPE_SLOT5 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT5);
-                if(storage.SPECIAL_RECEIPE_SLOT6 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT6);
-                if(storage.SPECIAL_RECEIPE_SLOT7 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT7);
-                if(storage.SPECIAL_RECEIPE_SLOT8 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT8);
-                if(storage.SPECIAL_RECEIPE_SLOT9 != Material.AIR)
-                sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT9);
-                recipe = sr;
-            }else{
-                ShapedRecipe shr = new ShapedRecipe(result);
-                shr.shape("!@#",
-                          "$%^",
-                          "&*(");
-                if(storage.SPECIAL_RECEIPE_SLOT1 != Material.AIR)
-                shr.setIngredient('!', storage.SPECIAL_RECEIPE_SLOT1);
-                if(storage.SPECIAL_RECEIPE_SLOT2 != Material.AIR)
-                shr.setIngredient('@', storage.SPECIAL_RECEIPE_SLOT2);
-                if(storage.SPECIAL_RECEIPE_SLOT3 != Material.AIR)
-                shr.setIngredient('#', storage.SPECIAL_RECEIPE_SLOT3);
-                if(storage.SPECIAL_RECEIPE_SLOT4 != Material.AIR)
-                shr.setIngredient('$', storage.SPECIAL_RECEIPE_SLOT4);
-                if(storage.SPECIAL_RECEIPE_SLOT5 != Material.AIR)
-                shr.setIngredient('%', storage.SPECIAL_RECEIPE_SLOT5);
-                if(storage.SPECIAL_RECEIPE_SLOT6 != Material.AIR)
-                shr.setIngredient('^', storage.SPECIAL_RECEIPE_SLOT6);
-                if(storage.SPECIAL_RECEIPE_SLOT7 != Material.AIR)
-                shr.setIngredient('&', storage.SPECIAL_RECEIPE_SLOT7);
-                if(storage.SPECIAL_RECEIPE_SLOT8 != Material.AIR)
-                shr.setIngredient('*', storage.SPECIAL_RECEIPE_SLOT8);
-                if(storage.SPECIAL_RECEIPE_SLOT9 != Material.AIR)
-                shr.setIngredient('(', storage.SPECIAL_RECEIPE_SLOT9);
-                recipe = shr;
-            }
-            if(!Bukkit.getServer().addRecipe(recipe)){
-                Bukkit.getLogger().log(Level.WARNING, ChatColor.RED+"For some reason the plugin couldn't register the recipe for the special saddle!");
-            }
-        }
+		getServer().getPluginManager().registerEvents(chosenListener, this);
+		getServer().getPluginManager().registerEvents(new SpawnListener(nmsHandler, storage, styler), this);
+		load();
 
-        if(storage.ENABLE_FAKE_DEATH_EVENT){
-            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-            this.itemUpdatePacketListener = new ItemUpdatePacketListener(this, nmsHandler);
-            protocolManager.addPacketListener(itemUpdatePacketListener);
-        }
-        phcommand = new PHCommand(storage, this, nmsHandler);
-        Bukkit.getPluginCommand("ph").setExecutor(phcommand);
-        Bukkit.getPluginCommand("ph").setTabCompleter(phcommand);
-        if(storage.USE_SPECIAL_SADDLE){
-            specialSaddle = styler.makeSpecialSaddle();
-        }
+		if (storage.ENABLE_FAKE_DEATH_EVENT) {
+			ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+			this.itemUpdatePacketListener = new ItemUpdatePacketListener(this, nmsHandler);
+			protocolManager.addPacketListener(itemUpdatePacketListener);
+		}
+		phcommand = new PHCommand(storage, this);
+		getCommand("ph").setExecutor(phcommand);
+		getCommand("ph").setTabCompleter(phcommand);
+	}
 
-    }
+	@Override
+	public void onDisable() {
+		nmsHandler = null;
+		storage = null;
+		handler = null;
+		config = null;
+		instance = null;
+		chosenListener = null;
+	}
 
-    public void onDisable(){
-        nmsHandler = null;
-        storage = null;
-        handler = null;
-        config = null;
-        instance = null;
-        chosenListener = null;
-    }
+	public void load() {
+		if (storage.USE_SPECIAL_SADDLE) {
+			specialSaddle = nmsHandler.setSpecialSaddle(new ItemStack(Material.SADDLE));
+			ItemMeta resultMeta = specialSaddle.getItemMeta();
+			resultMeta.setDisplayName(storage.SPECIAL_NAME);
+			resultMeta.setLore(storage.SPECIAL_LORE);
+			if (storage.SPECIAL_ENCHANTED) {
+				resultMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
+				resultMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			}
+			specialSaddle.setItemMeta(resultMeta);
+			if(storage.SPECIAL_CRAFTABLE) {
+				Recipe recipe;
+				if (storage.SPECIAL_RECEIPE_IGNORE_ORDER) {
+					ShapelessRecipe sr = new ShapelessRecipe(specialSaddle);
+					addIngredientIfNotAir(sr, Arrays.asList(storage.SPECIAL_RECEIPE_SLOT1, storage.SPECIAL_RECEIPE_SLOT2,
+							storage.SPECIAL_RECEIPE_SLOT3, storage.SPECIAL_RECEIPE_SLOT4, storage.SPECIAL_RECEIPE_SLOT5,
+							storage.SPECIAL_RECEIPE_SLOT6, storage.SPECIAL_RECEIPE_SLOT7, storage.SPECIAL_RECEIPE_SLOT8,
+							storage.SPECIAL_RECEIPE_SLOT9));
+					recipe = sr;
+				} else {
+					ShapedRecipe shr = new ShapedRecipe(specialSaddle);
+					shr.shape("!@#", "$%^", "&*(");
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT1, '!');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT2, '@');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT3, '#');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT4, '$');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT5, '%');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT6, '^');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT7, '&');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT8, '*');
+					setIngredientIfNotAir(shr, storage.SPECIAL_RECEIPE_SLOT9, '(');
+					recipe = shr;
+				}
+				if (!getServer().addRecipe(recipe)) {
+					getLogger().warning(ChatColor.RED
+							+ "For some reason the plugin couldn't register the recipe for the special saddle!");
+				}
+			}
+		}
+	}
 
+	public void reload() {
+		handler.reloadCustomConfig(config);
+		if (config.file == null || config.fileConfig == null) {
+			handler.saveDefaultConfig(config);
+		}
+		storage.load(config, handler);
+		phcommand.load();
 
-    public void reload(){
-        handler.reloadCustomConfig(config);
-        chosenListener = null;
-        handler = new CustomConfig(instance);
-        config = new Config("config");
-        if (config.file == null || config.fileConfig == null){
-            handler.saveDefaultConfig(config);
-        }
-        storage = new Storage(config, handler);
-        styler = new Styler(storage, this);
-        phcommand = new PHCommand(storage, this, nmsHandler);
+		HandlerList.unregisterAll(chosenListener);
+		if (playerDeathListener != null)
+			HandlerList.unregisterAll(playerDeathListener);
 
-        HandlerList.unregisterAll(this);
+		if (storage.MODE.equalsIgnoreCase("TAKEOFF")) {
+			chosenListener = new TakeOffListener(nmsHandler, storage, styler);
+		} else {
+			chosenListener = new RightClickListener(nmsHandler, storage, styler);
+		}
+		getServer().getPluginManager().registerEvents(chosenListener, this);
 
-        if(storage.MODE.equalsIgnoreCase("TAKEOFF")){
-            chosenListener = new TakeOffListener(nmsHandler, storage, styler);
-        }else{
-            chosenListener = new RightClickListener(nmsHandler, storage, styler);
-        }
-        getServer().getPluginManager().registerEvents(chosenListener, this);
-        spawnListener = new SpawnListener(nmsHandler, storage, styler);
-        getServer().getPluginManager().registerEvents(spawnListener, this);
-        if(storage.ENABLE_FAKE_DEATH_EVENT){
-            playerDeathListener = new PlayerDeathListener(nmsHandler, this);
-            getServer().getPluginManager().registerEvents(playerDeathListener, this);
-        }
-        getCommand("ph").setTabCompleter(phcommand);
-        getCommand("ph").setExecutor(phcommand);
-        if(storage.USE_SPECIAL_SADDLE){
-            specialSaddle = styler.makeSpecialSaddle();
-        }
-        if(storage.USE_SPECIAL_SADDLE && storage.SPECIAL_CRAFTABLE){
-            Recipe recipe;
+		if (storage.ENABLE_FAKE_DEATH_EVENT) {
+			playerDeathListener = new PlayerDeathListener(nmsHandler, this);
+			getServer().getPluginManager().registerEvents(playerDeathListener, this);
+		}
+		getCommand("ph").setTabCompleter(phcommand);
+		getCommand("ph").setExecutor(phcommand);
 
-            if(storage.SPECIAL_RECEIPE_IGNORE_ORDER){
-                ShapelessRecipe sr = new ShapelessRecipe(specialSaddle);
-                if(storage.SPECIAL_RECEIPE_SLOT1 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT1);
-                if(storage.SPECIAL_RECEIPE_SLOT2 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT2);
-                if(storage.SPECIAL_RECEIPE_SLOT3 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT3);
-                if(storage.SPECIAL_RECEIPE_SLOT4 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT4);
-                if(storage.SPECIAL_RECEIPE_SLOT5 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT5);
-                if(storage.SPECIAL_RECEIPE_SLOT6 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT6);
-                if(storage.SPECIAL_RECEIPE_SLOT7 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT7);
-                if(storage.SPECIAL_RECEIPE_SLOT8 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT8);
-                if(storage.SPECIAL_RECEIPE_SLOT9 != Material.AIR)
-                    sr.addIngredient(storage.SPECIAL_RECEIPE_SLOT9);
-                recipe = sr;
-            }else{
-                ShapedRecipe shr = new ShapedRecipe(specialSaddle);
-                shr.shape("!@#",
-                        "$%^",
-                        "&*(");
-                if(storage.SPECIAL_RECEIPE_SLOT1 != Material.AIR)
-                    shr.setIngredient('!', storage.SPECIAL_RECEIPE_SLOT1);
-                if(storage.SPECIAL_RECEIPE_SLOT2 != Material.AIR)
-                    shr.setIngredient('@', storage.SPECIAL_RECEIPE_SLOT2);
-                if(storage.SPECIAL_RECEIPE_SLOT3 != Material.AIR)
-                    shr.setIngredient('#', storage.SPECIAL_RECEIPE_SLOT3);
-                if(storage.SPECIAL_RECEIPE_SLOT4 != Material.AIR)
-                    shr.setIngredient('$', storage.SPECIAL_RECEIPE_SLOT4);
-                if(storage.SPECIAL_RECEIPE_SLOT5 != Material.AIR)
-                    shr.setIngredient('%', storage.SPECIAL_RECEIPE_SLOT5);
-                if(storage.SPECIAL_RECEIPE_SLOT6 != Material.AIR)
-                    shr.setIngredient('^', storage.SPECIAL_RECEIPE_SLOT6);
-                if(storage.SPECIAL_RECEIPE_SLOT7 != Material.AIR)
-                    shr.setIngredient('&', storage.SPECIAL_RECEIPE_SLOT7);
-                if(storage.SPECIAL_RECEIPE_SLOT8 != Material.AIR)
-                    shr.setIngredient('*', storage.SPECIAL_RECEIPE_SLOT8);
-                if(storage.SPECIAL_RECEIPE_SLOT9 != Material.AIR)
-                    shr.setIngredient('(', storage.SPECIAL_RECEIPE_SLOT9);
-                recipe = shr;
-            }
-            if(!Bukkit.getServer().addRecipe(recipe)){
-                Bukkit.getLogger().log(Level.WARNING, ChatColor.RED+"For some reason the plugin couldn't register the recipe for the special saddle!");
-            }
-        }
+		load();
+	}
 
-    }
+	private void addIngredientIfNotAir(ShapelessRecipe shr, List<Material> list) {
+		list.forEach((type) -> {
+			if (type.equals(Material.AIR))
+				shr.addIngredient(type);
+		});
+	}
 
-    public NMSHandler getHandler(){
-        return this.nmsHandler;
-    }
+	private void setIngredientIfNotAir(ShapedRecipe shr, Material type, char c) {
+		if (type != Material.AIR)
+			shr.setIngredient(c, type);
+	}
 
-    public ItemUpdatePacketListener getDeathItemPacketListener(){
-        return this.itemUpdatePacketListener;
-    }
+	public NMSHandler getHandler() {
+		return this.nmsHandler;
+	}
 
-    public static ItemStack getSpSaddle(){
-        return specialSaddle;
-    }
+	public ItemUpdatePacketListener getDeathItemPacketListener() {
+		return this.itemUpdatePacketListener;
+	}
 
+	public static ItemStack getSpSaddle() {
+		return specialSaddle;
+	}
 
-    public static PortableHorses instance(){
-        return (PortableHorses)instance;
-    }
+	public static PortableHorses instance() {
+		return (PortableHorses) instance;
+	}
 
-
-    public static boolean newHorseSystem(){
-        return Version.getVersion().isNewHorseSystem();
-    }
+	public static boolean newHorseSystem() {
+		return Version.getVersion().isNewHorseSystem();
+	}
 
 }

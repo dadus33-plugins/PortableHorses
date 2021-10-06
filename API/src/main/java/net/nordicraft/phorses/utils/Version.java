@@ -4,10 +4,6 @@ import org.bukkit.Bukkit;
 
 public enum Version {
 
-	V1_7_R1("1.7.1", 71, null),
-	V1_7_R2("1.7.4", 72, null),
-	V1_7_R3("1.7.8", 73, null),
-	V1_7_R4("1.7.10", 74, null),
 	V1_8_R1("1.8.1", 81, "v1_8_R1.Handler1_8_R1"),
 	V1_8_R2("1.8.3", 82, "v1_8_R2.Handler1_8_R2"),
 	V1_8_R3("1.8.8", 83, "v1_8_R3.Handler1_8_R3"),

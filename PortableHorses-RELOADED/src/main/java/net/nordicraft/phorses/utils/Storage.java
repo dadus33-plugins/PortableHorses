@@ -18,127 +18,127 @@ import java.util.logging.Level;
 
 public class Storage {
 
-	private final FileConfiguration conf;
+	private FileConfiguration conf;
 
-	public final String MODE;
-	public final boolean ALLOW_RECURSIVE_PHORSE;
-	public final boolean DROP_NORMAL_SADDLE;
-	public final boolean AUTO_SADDLE;
-	public final boolean GIVE_SADDLE;
-	public final String AUTO_SADDLE_FALLBACK_OPTION;
-	public final boolean STORE_ARMOR;
-	public final boolean STORE_INVENTORY;
-	public final boolean USE_SPECIAL_SADDLE;
-	public final boolean ENABLE_HELP_COMMAND;
-	public final boolean AUTO_MOUNT;
-	public final boolean AUTO_TAKE_ON_DISMOUNT;
-	public final boolean COMBATLOG_INTEGRATION;
-	public final boolean ENABLE_FAKE_DEATH_EVENT;
+	public String MODE;
+	public boolean ALLOW_RECURSIVE_PHORSE;
+	public boolean DROP_NORMAL_SADDLE;
+	public boolean AUTO_SADDLE;
+	public boolean GIVE_SADDLE;
+	public String AUTO_SADDLE_FALLBACK_OPTION;
+	public boolean STORE_ARMOR;
+	public boolean STORE_INVENTORY;
+	public boolean USE_SPECIAL_SADDLE;
+	public boolean ENABLE_HELP_COMMAND;
+	public boolean AUTO_MOUNT;
+	public boolean AUTO_TAKE_ON_DISMOUNT;
+	public boolean COMBATLOG_INTEGRATION;
+	public boolean ENABLE_FAKE_DEATH_EVENT;
 
-	public final String DISPLAY_NAME;
+	public String DISPLAY_NAME;
 
-	public final boolean PHORSE_ENCHANTED;
-	public final boolean SHOW_COLOR;
-	public final boolean SHOW_STYLE;
-	public final boolean SHOW_VARIANT;
-	public final boolean SHOW_JUMP_STRENGTH;
-	public final boolean SHOW_HAS_CHEST;
-	public final boolean SHOW_HEALTH;
-	public final boolean SHOW_SPEED;
+	public boolean PHORSE_ENCHANTED;
+	public boolean SHOW_COLOR;
+	public boolean SHOW_STYLE;
+	public boolean SHOW_VARIANT;
+	public boolean SHOW_JUMP_STRENGTH;
+	public boolean SHOW_HAS_CHEST;
+	public boolean SHOW_HEALTH;
+	public boolean SHOW_SPEED;
 
-	public final String COLOR_BLACK;
-	public final String COLOR_BROWN;
-	public final String COLOR_CHESTNUT;
-	public final String COLOR_CREAMY;
-	public final String COLOR_DARK_BROWN;
-	public final String COLOR_GRAY;
-	public final String COLOR_WHITE;
+	public String COLOR_BLACK;
+	public String COLOR_BROWN;
+	public String COLOR_CHESTNUT;
+	public String COLOR_CREAMY;
+	public String COLOR_DARK_BROWN;
+	public String COLOR_GRAY;
+	public String COLOR_WHITE;
 
-	public final String STYLE_BLACK_DOTS;
-	public final String STYLE_WHITE_DOTS;
-	public final String STYLE_NONE;
-	public final String STYLE_WHITE;
-	public final String STYLE_WHITEFIELD;
+	public String STYLE_BLACK_DOTS;
+	public String STYLE_WHITE_DOTS;
+	public String STYLE_NONE;
+	public String STYLE_WHITE;
+	public String STYLE_WHITEFIELD;
 
-	public final String VARIANT_DONKEY;
-	public final String VARIANT_HORSE;
-	public final String VARIANT_MULE;
-	public final String VARIANT_SKELETON_HORSE;
-	public final String VARIANT_UNDEAD_HORSE;
+	public String VARIANT_DONKEY;
+	public String VARIANT_HORSE;
+	public String VARIANT_MULE;
+	public String VARIANT_SKELETON_HORSE;
+	public String VARIANT_UNDEAD_HORSE;
 
-	public final String HAS_CHEST;
+	public String HAS_CHEST;
 
-	public final List<String> DATA;
-	public final List<String> COLOR;
-	public final List<String> STYLE;
-	public final List<String> VARIANT;
-	public final List<String> JUMP;
-	public final List<String> HEALTH;
-	public final List<String> SPEED;
+	public List<String> DATA;
+	public List<String> COLOR;
+	public List<String> STYLE;
+	public List<String> VARIANT;
+	public List<String> JUMP;
+	public List<String> HEALTH;
+	public List<String> SPEED;
 
-	public final boolean TAKEOFF_ALLOW_STRANGER_TAKE_OFF;
+	public boolean TAKEOFF_ALLOW_STRANGER_TAKE_OFF;
 
-	public final boolean RIGHTCLICK_ALLOW_STRANGER_TAKE;
-	public final boolean RIGHT_CLICK_ALLOW_PHORSE_OVERRIDE;
+	public boolean RIGHTCLICK_ALLOW_STRANGER_TAKE;
+	public boolean RIGHT_CLICK_ALLOW_PHORSE_OVERRIDE;
 
-	public final boolean SPECIAL_CRAFTABLE;
+	public boolean SPECIAL_CRAFTABLE;
 
-	public final Material SPECIAL_RECEIPE_SLOT1;
-	public final Material SPECIAL_RECEIPE_SLOT2;
-	public final Material SPECIAL_RECEIPE_SLOT3;
-	public final Material SPECIAL_RECEIPE_SLOT4;
-	public final Material SPECIAL_RECEIPE_SLOT5;
-	public final Material SPECIAL_RECEIPE_SLOT6;
-	public final Material SPECIAL_RECEIPE_SLOT7;
-	public final Material SPECIAL_RECEIPE_SLOT8;
-	public final Material SPECIAL_RECEIPE_SLOT9;
-	public final boolean SPECIAL_RECEIPE_IGNORE_ORDER;
+	public Material SPECIAL_RECEIPE_SLOT1;
+	public Material SPECIAL_RECEIPE_SLOT2;
+	public Material SPECIAL_RECEIPE_SLOT3;
+	public Material SPECIAL_RECEIPE_SLOT4;
+	public Material SPECIAL_RECEIPE_SLOT5;
+	public Material SPECIAL_RECEIPE_SLOT6;
+	public Material SPECIAL_RECEIPE_SLOT7;
+	public Material SPECIAL_RECEIPE_SLOT8;
+	public Material SPECIAL_RECEIPE_SLOT9;
+	public boolean SPECIAL_RECEIPE_IGNORE_ORDER;
 
-	public final String SPECIAL_NAME;
-	public final List<String> SPECIAL_LORE;
-	public final boolean SPECIAL_ENCHANTED;
+	public String SPECIAL_NAME;
+	public List<String> SPECIAL_LORE;
+	public boolean SPECIAL_ENCHANTED;
 
-	public final List<String> MESSAGES_HELP_COMMAND;
-	public final String MESSAGES_PREFIX;
-	public final String MESSAGES_HORSE_TAKEN;
-	public final String MESSAGES_HORSE_SPAWNED;
-	public final String MESSAGES_CANT_ADD_ITEM;
-	public final String TAKE_OFF_FULL_INV_MODE;
-	public final String TAKE_OFF_SADDLE_DROPPED;
-	public final String TAKE_OFF_OPERATION_CANCELLED;
-	public final String TAKE_OFF_FIRST_ITEM_REPLACED;
-	public final String TAKE_OFF_DENIED_NOT_OWNER;
+	public List<String> MESSAGES_HELP_COMMAND;
+	public String MESSAGES_PREFIX;
+	public String MESSAGES_HORSE_TAKEN;
+	public String MESSAGES_HORSE_SPAWNED;
+	public String MESSAGES_CANT_ADD_ITEM;
+	public String TAKE_OFF_FULL_INV_MODE;
+	public String TAKE_OFF_SADDLE_DROPPED;
+	public String TAKE_OFF_OPERATION_CANCELLED;
+	public String TAKE_OFF_FIRST_ITEM_REPLACED;
+	public String TAKE_OFF_DENIED_NOT_OWNER;
 
-	public final String MESSAGES_AUTO_SADDLE_FIRST_ITEM_REPLACED;
-	public final String MESSAGES_AUTO_SADDLE_SADDLE_DROPPED;
-	public final String MESSAGES_RELOAD;
-	public final String MESSAGES_PLAYER_NOT_FOUND;
-	public final String MESSAGES_SPECIAL_SADDLE_NOT_ENABLED;
-	public final String MESSAGES_CANT_SEND_FROM_CONSOLE;
-	public final String MESSAGES_NO_SPACE_FOR_SPECIAL_SADDLE;
-	public final String MESSAGES_SPECIAL_SADDLE_GIVEN;
-	public final String MESSAGES_CANT_OVERRIDE_PHORSE;
-	public final String MESSAGES_CANT_PLACE;
-	public final String MESSAGES_CANT_SPAWN_COMBATLOGGED;
-	public final String MESSAGES_CANT_USE_NO_PERM;
+	public String MESSAGES_AUTO_SADDLE_FIRST_ITEM_REPLACED;
+	public String MESSAGES_AUTO_SADDLE_SADDLE_DROPPED;
+	public String MESSAGES_RELOAD;
+	public String MESSAGES_PLAYER_NOT_FOUND;
+	public String MESSAGES_SPECIAL_SADDLE_NOT_ENABLED;
+	public String MESSAGES_CANT_SEND_FROM_CONSOLE;
+	public String MESSAGES_NO_SPACE_FOR_SPECIAL_SADDLE;
+	public String MESSAGES_SPECIAL_SADDLE_GIVEN;
+	public String MESSAGES_CANT_OVERRIDE_PHORSE;
+	public String MESSAGES_CANT_PLACE;
+	public String MESSAGES_CANT_SPAWN_COMBATLOGGED;
+	public String MESSAGES_CANT_USE_NO_PERM;
 
 	public Storage(Config cfg, CustomConfig handler) {
+		load(cfg, handler);
+	}
+	
+	public void load(Config cfg, CustomConfig handler) {
 		this.conf = handler.getCustomConfig(cfg);
 
 		switch (conf.getString("General.mode")) {
-		case "TAKEOFF":
-			this.MODE = "TAKEOFF";
-			break;
 		case "RIGHTCLICK":
 			this.MODE = "RIGHTCLICK";
 			break;
+		case "TAKEOFF":
+			this.MODE = "TAKEOFF";
+			break;
 		default:
-			Bukkit.getLogger().log(Level.WARNING,
-					ChatColor.translateAlternateColorCodes('&',
-							"&cInvalid value found in plugins/PortableHorses/config.yml on field "
-									+ "\"General.mode\". Found \"" + conf.getString("General.mode") + "\" while"
-									+ " only possible values are \"TAKEOFF\" or \"RIGHTCLICK\". The option was reset to"
-									+ " default value: \"TAKEOFF\""));
+			handler.plugin.getLogger().warning(ChatColor.RED + "Invalid value found in config.yml on field 'General.mode'. Found '"
+					+ conf.getString("General.mode") + "'. Type available: 'TAKEOFF' or 'RIGHTCLICK'. Option resetted as default value: 'TAKEOFF'");
 			conf.set("General.mode", "TAKEOFF");
 			this.MODE = "TAKEOFF";
 		}
