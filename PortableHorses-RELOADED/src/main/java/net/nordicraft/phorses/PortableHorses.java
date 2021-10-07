@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import net.nordicraft.phorses.api.DefaultNMSHandler;
 import net.nordicraft.phorses.api.NMSHandler;
 import net.nordicraft.phorses.commands.PHCommand;
 import net.nordicraft.phorses.listeners.PlayerDeathListener;
@@ -52,14 +53,18 @@ public class PortableHorses extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		Version version = Version.getVersion();
-		PortableHorses.instance().getLogger().info(version.isSupported() ? "Loading support for " + version.name()
-				: "Version " + version.name() + " isn't supported yet.");
-		try {
-			nmsHandler = (NMSHandler) Class
-					.forName("net.nordicraft.phorses.implementations." + version.getHandlerName()).getConstructor()
-					.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(version.isSupported()) {
+			PortableHorses.instance().getLogger().info("Loading support for " + version.name());
+			try {
+				nmsHandler = (NMSHandler) Class
+						.forName("net.nordicraft.phorses.implementations." + version.getHandlerName()).getConstructor()
+						.newInstance();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			PortableHorses.instance().getLogger().info("Version " + version.name() + " isn't supported yet.");
+			nmsHandler = new DefaultNMSHandler();
 		}
 
 		handler = new CustomConfig(this);
